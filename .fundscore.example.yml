@@ -1,0 +1,40 @@
+# .fundscore.yml — optional overrides for fundscore
+# Remove or leave empty to use all defaults.
+# See README.md for full documentation.
+
+# Override the auto-inferred Investor Lens
+# lens:
+#   round: seed          # pre-seed | seed | series-a | grant
+#   checkSize: "$500k"
+#   teamMode: solo       # solo | small-team | operating-team
+#   naics: "511210"
+
+# Override individual check weights (0 = disabled, higher = more important)
+# weights:
+#   readme-exists: 8
+#   readme-oneliner: 7
+#   readme-cta: 5
+#   readme-demo: 4
+#   funding-or-roadmap: 9
+#   market-comps: 7
+#   risks-honest: 6
+#   license: 5
+#   tests-or-ci: 4
+#   security: 3
+#   contact-team: 5
+#   audience-customer: 6
+
+# Mark specific checks as required (fail status if they don't pass)
+# required:
+#   readme-exists: true
+#   funding-or-roadmap: true
+
+# Scoring weights for combining coverage + quality
+# scoring:
+#   coverageWeight: 0.6
+#   qualityWeight: 0.4
+
+# Thresholds for status (pass / warn / fail)
+# thresholds:
+#   warn: 5
+#   fail: 3

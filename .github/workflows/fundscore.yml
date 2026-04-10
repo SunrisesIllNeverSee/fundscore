@@ -1,0 +1,78 @@
+name: Fundscore — Funding Viability Check
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  fundscore:
+    name: Run Fundscore
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run fundscore (Markdown report)
+        id: fundscore_md
+        run: |
+          node bin/fundscore.js --md > fundscore-report.md 2>&1 || true
+          echo "report_file=fundscore-report.md" >> "$GITHUB_OUTPUT"
+
+      - name: Run fundscore (JSON report)
+        run: node bin/fundscore.js --json > fundscore-report.json 2>&1 || true
+
+      - name: Post PR comment with report
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('fundscore-report.md', 'utf8');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const marker = '<!-- fundscore-report -->';
+            const body = `${marker}\n${report}`;
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Upload JSON report artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fundscore-report
+          path: fundscore-report.json
+          retention-days: 30
