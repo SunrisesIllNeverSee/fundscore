@@ -1,0 +1,33 @@
+{
+  "name": "fundscore",
+  "version": "0.1.0",
+  "description": "Repo-only funding viability scorer — deterministic artifact coverage + heuristic quality scoring for investor readiness",
+  "main": "src/core/index.js",
+  "bin": {
+    "fundscore": "bin/fundscore.js"
+  },
+  "scripts": {
+    "start": "node bin/fundscore.js",
+    "lint": "eslint src bin tests --ext .js",
+    "test": "jest --testPathPattern=tests/"
+  },
+  "keywords": [
+    "funding",
+    "investor-readiness",
+    "github-action",
+    "cli",
+    "scoring"
+  ],
+  "author": "SunrisesIllNeverSee",
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
