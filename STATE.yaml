@@ -1,0 +1,324 @@
+# fundscore — State Snapshot
+# Captured: 2026-07-07
+# Status: PAUSED — fully functional, published, ready for integration
+
+project:
+  name: fundscore
+  version: "0.2.0"
+  tagline: "Lighthouse for repos"
+  description: "Deterministic investor-readiness scoring for GitHub repositories. No-LLM CLI tool + GitHub Action + MCP server. Scores 0-100 across three dimensions."
+  license: MIT
+  author: SunrisesIllNeverSee
+
+locations:
+  npm: "https://www.npmjs.com/package/fundscore"
+  github: "https://github.com/SunrisesIllNeverSee/fundscore"
+  local: "/Users/dericmchenry/Desktop/Desktop Storage/coding/GitHub/fundscore"
+  published_version: "0.2.0"
+  published_date: "2026-07-07"
+
+status:
+  phase: "Phase 2.5 complete — paused"
+  tests: "67/67 passing (43 core + 24 MCP)"
+  commits: 4 new commits on main (ea381c4, ace9cb2, 9e2b2a0, plus initial)
+  pushed: true
+  published: true
+  working: true
+  blocked: false
+  paused: true
+  pause_reason: "Exploring integration with SigRank ecosystem"
+
+architecture:
+  language: "Node.js (CommonJS)"
+  engine_version: ">=18"
+  dependencies:
+    runtime:
+      - "@modelcontextprotocol/sdk ^1.29.0"
+      - "js-yaml ^4.1.0"
+    dev:
+      - "eslint ^8.57.0"
+      - "jest ^29.7.0"
+  package_size: "27.0 kB (16 files)"
+  entry_points:
+    cli: "bin/fundscore.js"
+    mcp: "bin/fundscore.js mcp"
+    api: "src/core/index.js → score(repoRoot)"
+
+dimensions:
+  artifacts:
+    weight: 0.5
+    scale: "0-100"
+    checks: 18
+    check_ids:
+      - readme-exists
+      - readme-oneliner
+      - readme-cta
+      - readme-demo
+      - deployed-url
+      - funding-or-roadmap
+      - market-comps
+      - risks-honest
+      - license
+      - tests-or-ci
+      - security
+      - contact-team
+      - audience-customer
+      - changelog
+      - contributing
+      - architecture
+      - git-activity
+      - contributor-count
+    new_checks_in_v02:
+      - deployed-url
+      - changelog
+      - contributing
+      - architecture
+      - git-activity
+      - contributor-count
+    multi_language_tests: ["JS", "Python", "Rust", "Go", "Ruby", "Java"]
+
+  business_viability:
+    weight: 0.3
+    scale: "0-100"
+    checks: 7
+    check_ids:
+      - monetization-clarity
+      - recession-resilience
+      - pricing-power
+      - tech-enabled-margins
+      - contingency-depth
+      - market-evidence
+      - traction-evidence
+    framing: "Does your repo communicate the signals investors look for? (not 'we evaluate your business')"
+    asterisk: "Snapshot of repo-readiness signals, not a business valuation"
+
+  quality:
+    weight: 0.2
+    scale: "0-100"
+    dimensions:
+      - readability (Flesch Reading Ease)
+      - specificity (concrete numbers/metrics)
+      - structure (headings/lists/code blocks)
+      - length (not too sparse/padded)
+      - consistency (no contradicting numbers)
+
+round_reports:
+  rounds: ["pre-seed", "seed", "series-a", "grant", "unknown"]
+  structure: "required (60%) + expected (30%) + bonus (10%)"
+  source: "General VC knowledge (not from rokrev/CIVITAE)"
+
+cli_commands:
+  - command: "fundscore"
+    description: "Score current repo (summary output)"
+  - command: "fundscore --md"
+    description: "Full markdown report"
+  - command: "fundscore --json"
+    description: "JSON output"
+  - command: "fundscore --fail-below 50"
+    description: "Exit 1 if score < 50"
+  - command: "fundscore fix"
+    description: "Show scaffold plan (dry run)"
+  - command: "fundscore fix --apply"
+    description: "Create missing doc templates"
+  - command: "fundscore fix --apply --force"
+    description: "Overwrite existing docs"
+  - command: "fundscore history"
+    description: "Show score over time"
+  - command: "fundscore history --save"
+    description: "Save current score as snapshot"
+  - command: "fundscore badge"
+    description: "Output SVG badge"
+  - command: "fundscore badge --embed"
+    description: "Output markdown badge snippet"
+  - command: "fundscore badge --save"
+    description: "Save SVG badge to repo"
+  - command: "fundscore mcp"
+    description: "Start MCP server (stdio) for AI agent integration"
+
+mcp_server:
+  status: "built and published"
+  transport: "stdio"
+  tools:
+    - name: score_repo
+      description: "Score a repo, return agent-optimized report. Auto-saves snapshot."
+      params: ["repoPath (optional)"]
+      returns: "overallScore, dimensions, round analysis, topFixes, missingChecks, snapshotSaved, asterisk"
+    - name: get_fix_plan
+      description: "Get scaffold plan for missing docs (read-only)"
+      params: ["repoPath (optional)"]
+      returns: "currentScore, files[], totalPotentialGain"
+    - name: apply_fixes
+      description: "Create template files for missing docs"
+      params: ["repoPath (optional)", "dryRun (default: true)", "force (default: false)"]
+      returns: "written, skipped, previousScore, newScore, scoreDelta"
+  auto_save: true
+  auto_save_config: ".fundscore.yml → history.autoSave: false to disable"
+  deterministic_advantage: "AI agent calling LLM scorer is circular. AI agent calling fundscore is asking a deterministic audit tool."
+
+github_action:
+  status: "workflow exists, untested in real CI"
+  file: ".github/workflows/fundscore.yml"
+  behavior:
+    pull_request: "Posts markdown report as PR comment"
+    push: "Uploads fundscore-report.json as artifact (30-day retention)"
+  token: "GITHUB_TOKEN only (no extra secrets)"
+
+templates:
+  scaffoldable_docs:
+    - FUNDING.md
+    - ROADMAP.md
+    - RISKS.md
+    - SECURITY.md
+    - CONTRIBUTING.md
+    - CHANGELOG.md
+    - COMPARABLES.md
+  check_to_template_map:
+    funding-or-roadmap: [FUNDING.md, ROADMAP.md]
+    risks-honest: [RISKS.md]
+    security: [SECURITY.md]
+    contributing: [CONTRIBUTING.md]
+    changelog: [CHANGELOG.md]
+    market-comps: [COMPARABLES.md]
+
+configuration:
+  file: ".fundscore.yml"
+  fields:
+    lens.round: "pre-seed | seed | series-a | grant"
+    lens.checkSize: "string"
+    lens.teamMode: "solo | small-team | operating-team"
+    lens.naics: "string"
+    weights: "override artifact check weights by ID"
+    businessWeights: "override business check weights by ID"
+    required: "mark checks as required"
+    scoring.artifactsWeight: "default 0.5"
+    scoring.businessWeight: "default 0.3"
+    scoring.qualityWeight: "default 0.2"
+    thresholds.warn: "default 50"
+    thresholds.fail: "default 30"
+    history.autoSave: "default true"
+
+files:
+  core:
+    - src/core/index.js (entry point, exports score)
+    - src/core/scorer.js (main scoring orchestration, path validation, 3-dimension aggregation)
+    - src/core/rubric.js (18 artifact checks, multi-language test detection, git activity)
+    - src/core/business.js (7 business viability checks)
+    - src/core/quality.js (5 heuristic quality dimensions)
+    - src/core/lens.js (investor lens inference: round, check size, team mode, NAICS)
+    - src/core/lens-report.js (round-specific gap analysis, required/expected/bonus)
+    - src/core/format.js (markdown + summary output, 0-100 scale, asterisk)
+    - src/core/templates.js (7 scaffold templates + check-to-template mapping)
+    - src/core/loader.js (file reading, listing, overrides)
+  mcp:
+    - src/mcp/server.js (stdio MCP server, 3 tools, auto-save snapshots)
+  cli:
+    - bin/fundscore.js (CLI entry: score, fix, history, badge, mcp)
+  tests:
+    - tests/core.test.js (43 tests)
+    - tests/mcp.test.js (24 tests)
+  docs:
+    - README.md (full documentation)
+    - FIXES.md (4 bugs + business viability proposal)
+    - RESEARCH.md (competitive landscape + R&D analysis)
+    - PLAN.md (Phase 0-5 playbook with feedback loops)
+  config:
+    - .fundscore.example.yml
+    - .github/workflows/fundscore.yml
+  archived:
+    - rokrev.archived (original research notes, moved out of active path)
+
+bugs_fixed:
+  - id: BUG-1
+    description: "Nonexistent path scored 0.6 instead of erroring"
+    fix: "Path validation in scorer.js — throws + exits 1"
+  - id: BUG-2
+    description: "Non-deterministic generatedAt timestamp in output"
+    fix: "generatedAt separated as metadata, not part of deterministic score"
+  - id: BUG-3
+    description: "Wrong GitHub URL in markdown footer (Burnmydays)"
+    fix: "Updated to SunrisesIllneverSee/fundscore"
+  - id: BUG-4
+    description: "Name inconsistency in README (Burnmydays branding)"
+    fix: "Rebranded to fundscore — Lighthouse for repos"
+
+competitive_landscape:
+  direct_competitors:
+    - comreadiness (commercial SaaS, AI-based, closest overlap)
+    - oss-investment-scorecard (manual framework, not automated)
+    - github-venture-scout (AI-based, profile-focused)
+    - repo-doctor-ai (mentions investors as target user)
+  general_repo_health:
+    - reposcore, repo-audit, astraudit, repopulse, repohealth, repomedic
+  gh_action_pr_comments:
+    - agent-friendly-action, quality-monitor, pr406, depwire, devlens
+  badge_quality:
+    - openssf-scorecard (dominant in security), sonarqube (enterprise)
+  fundscore_position: "Only tool combining investor-readiness + deterministic + CLI + GitHub Action + MCP"
+  name_collision: "Moderate — 'FundScore' used in financial services, not in repo tooling"
+
+remaining_steps:
+  phase_3_web_ui:
+    status: "not started"
+    effort: "~1 day"
+    description: "Landing page: paste GitHub URL → get instant score + report"
+    components:
+      - "Server-side repo clone + score"
+      - "Shareable URL: fundscore.dev/repo/owner/name"
+      - "No auth, no database"
+      - "'Add to your repo' CTA → CLI + Action instructions"
+      - "Deploy on Vercel"
+    blocks: []
+    unblocks: ["phase_4", "phase_5"]
+
+  phase_3_5_registry_listing:
+    status: "not started"
+    effort: "~30 min"
+    description: "Submit to MCP Registry + Smithery"
+    blocks: []
+    unblocks: []
+
+  phase_3_7_github_action_test:
+    status: "not started"
+    effort: "~1 hour"
+    description: "Test the GitHub Action workflow in real CI"
+    blocks: []
+    unblocks: []
+
+  phase_4_score_history_pages:
+    status: "not started"
+    effort: "~1 week"
+    description: "Database + profile pages per repo showing score trajectory"
+    components:
+      - "Database: store score snapshots"
+      - "Data source: GitHub Action artifacts auto-upload to API"
+      - "Profile page: current score + trajectory chart + dimension breakdown"
+      - "Privacy: opt-in"
+    blocks: ["phase_3_web_ui"]
+    unblocks: ["phase_5"]
+
+  phase_5_discovery_platform:
+    status: "not started"
+    effort: "company-level"
+    description: "Connect founders and investors with deterministic evidence"
+    components:
+      - "Browse/filter repos by score, round, sector, trajectory"
+      - "Investor accounts: save searches, watch repos"
+      - "Founder accounts: claim repo, add context"
+      - "Evidence-backed claims"
+      - "API: fundscore.dev/api/score/owner/repo"
+      - "Leaderboards"
+    blocks: ["phase_4_score_history_pages"]
+    unblocks: []
+
+integration_notes:
+  sigrank: "OWNER EXPLORING — details TBD"
+  potential_connections:
+    - "fundscore as a SigRank metric/signal"
+    - "fundscore score as input to SigRank cascade"
+    - "shared MCP infrastructure pattern"
+    - "shared investor-readiness narrative"
+  architecture_compatibility:
+    - "fundscore is Node.js/CommonJS, sigrank-mcp is Node.js/ESM"
+    - "fundscore scoring engine is pure function: score(repoRoot) → report"
+    - "MCP pattern matches sigrank-mcp (stdio, same SDK)"
+  data_flow: "TBD — owner to define how fundscore feeds into SigRank"
