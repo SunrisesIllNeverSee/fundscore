@@ -1,16 +1,16 @@
 'use strict';
 
+const { execSync } = require('child_process');
+
 /**
- * Coverage rubric — deterministic checklist-based scoring.
+ * Coverage rubric — deterministic checklist-based scoring (0-100).
  * Each check has:
  *   id        — unique identifier
  *   label     — human-readable name
- *   weight    — relative weight (0–10 scale is normalised to sum)
+ *   weight    — relative weight (normalised to sum)
  *   required  — whether failing this check is a hard deduction
  *   check(ctx) — function returning { pass: boolean, evidence: string[], reason: string }
  */
-
-/** @typedef {{ repoRoot: string, files: string[], readFile: (f: string) => string|null, findFile: (f: string) => string|null, lens: object }} CheckContext */
 
 const DEFAULT_CHECKS = [
   {
@@ -31,9 +31,7 @@ const DEFAULT_CHECKS = [
     required: false,
     check(ctx) {
       const content = ctx.readFile('README.md') || '';
-      // Look for a short sentence (≤ 40 words) after the first heading that is not just the repo name
       const lines = content.split('\n').map((l) => l.trim()).filter(Boolean);
-      // A "one-liner" heuristic: first non-empty non-heading line with 5–60 words
       const firstPara = lines.find((l) => !l.startsWith('#') && l.split(/\s+/).length >= 5);
       if (firstPara) {
         return { pass: true, evidence: ['README.md'], reason: 'README appears to contain a one-liner or description.' };
@@ -72,6 +70,27 @@ const DEFAULT_CHECKS = [
     },
   },
   {
+    id: 'deployed-url',
+    label: 'Live deployed product URL mentioned',
+    weight: 6,
+    required: false,
+    check(ctx) {
+      const content = (ctx.readFile('README.md') || '') + (ctx.readFile('FUNDING.md') || '');
+      // Look for deployed product URLs (not just any URL — exclude github.com, npm, etc.)
+      const deployedPatterns = [
+        /https?:\/\/(?!github\.com|npmjs\.com|pypi\.org|registry\.|docs\.google|raw\.github)[^\s)]+\.(?:com|io|app|dev|ai|xyz|co|net|org)/i,
+        /https?:\/\/[a-z0-9-]+\.vercel\.app/i,
+        /https?:\/\/[a-z0-9-]+\.netlify\.app/i,
+        /https?:\/\/[a-z0-9-]+\.herokuapp\.com/i,
+        /https?:\/\/[a-z0-9-]+\.fly\.dev/i,
+        /https?:\/\/[a-z0-9-]+\.render\.com/i,
+      ];
+      const found = deployedPatterns.find((p) => p.test(content));
+      if (found) return { pass: true, evidence: ['README.md'], reason: 'README mentions a live deployed product URL.' };
+      return { pass: false, evidence: [], reason: 'No live deployed product URL found in README.' };
+    },
+  },
+  {
     id: 'funding-or-roadmap',
     label: 'Funding or roadmap document exists (FUNDING.md / ROADMAP.md)',
     weight: 9,
@@ -96,7 +115,6 @@ const DEFAULT_CHECKS = [
         const found = ctx.findFile(c);
         if (found) return { pass: true, evidence: [found], reason: `Found ${found}.` };
       }
-      // Also check README for comps section
       const readme = ctx.readFile('README.md') || '';
       if (/##?\s*(comparable|competitor|market|comps|landscape)/i.test(readme)) {
         return { pass: true, evidence: ['README.md'], reason: 'README contains a comparables/market section.' };
@@ -141,11 +159,11 @@ const DEFAULT_CHECKS = [
   },
   {
     id: 'tests-or-ci',
-    label: 'Tests or CI present (code repo signal)',
-    weight: 4,
+    label: 'Tests or CI present (multi-language)',
+    weight: 5,
     required: false,
     check(ctx) {
-      // package.json with a test script
+      // Node.js: package.json with test script
       const pkg = ctx.readFile('package.json');
       if (pkg) {
         try {
@@ -155,12 +173,38 @@ const DEFAULT_CHECKS = [
           }
         } catch { /* ignore */ }
       }
-      // __tests__ directory or *.test.* / *.spec.* files
-      const testFile = ctx.files.find((f) =>
+      // JS test files
+      const jsTest = ctx.files.find((f) =>
         /__tests__|\.test\.[jt]s$|\.spec\.[jt]s$|vitest|jest/.test(f)
       );
-      if (testFile) return { pass: true, evidence: [testFile], reason: 'Test files detected.' };
-      // CI config
+      if (jsTest) return { pass: true, evidence: [jsTest], reason: 'JS test files detected.' };
+      // Python: pytest, unittest, tox, nox
+      const pyTest = ctx.files.find((f) =>
+        /test_.*\.py$|.*_test\.py$|conftest\.py$|pytest\.ini$|tox\.ini$|noxfile\.py$|setup\.cfg$/.test(f)
+      );
+      if (pyTest) return { pass: true, evidence: [pyTest], reason: 'Python test files detected.' };
+      // Rust: cargo test
+      if (ctx.findFile('Cargo.toml') && ctx.files.some((f) => f.startsWith('tests/'))) {
+        return { pass: true, evidence: ['Cargo.toml', 'tests/'], reason: 'Rust test directory detected.' };
+      }
+      // Go: _test.go files
+      const goTest = ctx.files.find((f) => /_test\.go$/.test(f));
+      if (goTest) return { pass: true, evidence: [goTest], reason: 'Go test files detected.' };
+      // Ruby: rspec, minitest
+      const rubyTest = ctx.files.find((f) => /spec\/.*_spec\.rb$|test\/.*_test\.rb$|\.rspec$|Gemfile$/.test(f));
+      if (rubyTest && ctx.readFile('Gemfile') && /rspec|minitest/.test(ctx.readFile('Gemfile'))) {
+        return { pass: true, evidence: [rubyTest], reason: 'Ruby test files detected.' };
+      }
+      // Java: pom.xml with surefire, build.gradle with test
+      const pom = ctx.readFile('pom.xml');
+      if (pom && /surefire|junit|testng/i.test(pom)) {
+        return { pass: true, evidence: ['pom.xml'], reason: 'Java test config detected (Maven).' };
+      }
+      const gradle = ctx.files.find((f) => /build\.gradle$|build\.gradle\.kts$/.test(f));
+      if (gradle && ctx.readFile(gradle) && /test|junit/i.test(ctx.readFile(gradle))) {
+        return { pass: true, evidence: [gradle], reason: 'Java test config detected (Gradle).' };
+      }
+      // CI config (any language)
       const ciFile = ctx.files.find((f) => /\.github\/workflows\/.*\.ya?ml$/.test(f));
       if (ciFile) return { pass: true, evidence: [ciFile], reason: 'CI workflow detected.' };
       return { pass: false, evidence: [], reason: 'No test files or CI configuration found.' };
@@ -176,7 +220,6 @@ const DEFAULT_CHECKS = [
       for (const c of candidates) {
         if (ctx.findFile(c)) return { pass: true, evidence: [c], reason: `${c} found.` };
       }
-      // Dependency scanning configs
       const depScan = ctx.files.find((f) =>
         /dependabot\.ya?ml|\.snyk|\.whitesource|renovate\.json/.test(f)
       );
@@ -212,12 +255,104 @@ const DEFAULT_CHECKS = [
       return { pass: false, evidence: [], reason: 'README does not clearly identify audience or customer.' };
     },
   },
+  // --- NEW CHECKS (Phase 1 expansion) ---
+  {
+    id: 'changelog',
+    label: 'CHANGELOG or release history exists',
+    weight: 3,
+    required: false,
+    check(ctx) {
+      const candidates = ['CHANGELOG.md', 'CHANGELOG', 'CHANGES.md', 'HISTORY.md', 'docs/CHANGELOG.md'];
+      for (const c of candidates) {
+        const found = ctx.findFile(c);
+        if (found) return { pass: true, evidence: [found], reason: `Found ${found}.` };
+      }
+      return { pass: false, evidence: [], reason: 'No changelog or release history found.' };
+    },
+  },
+  {
+    id: 'contributing',
+    label: 'CONTRIBUTING.md exists (signals serious project)',
+    weight: 3,
+    required: false,
+    check(ctx) {
+      const candidates = ['CONTRIBUTING.md', '.github/CONTRIBUTING.md', 'docs/CONTRIBUTING.md'];
+      for (const c of candidates) {
+        const found = ctx.findFile(c);
+        if (found) return { pass: true, evidence: [found], reason: `Found ${found}.` };
+      }
+      return { pass: false, evidence: [], reason: 'No CONTRIBUTING.md found.' };
+    },
+  },
+  {
+    id: 'architecture',
+    label: 'Architecture / technical design docs exist',
+    weight: 4,
+    required: false,
+    check(ctx) {
+      const candidates = ['ARCHITECTURE.md', 'docs/ARCHITECTURE.md', 'DESIGN.md', 'docs/DESIGN.md', 'docs/architecture'];
+      for (const c of candidates) {
+        const found = ctx.findFile(c);
+        if (found) return { pass: true, evidence: [found], reason: `Found ${found}.` };
+      }
+      // Check for docs/ directory with multiple files
+      const docsFiles = ctx.files.filter((f) => f.startsWith('docs/') && /\.(md|rst|txt)$/i.test(f));
+      if (docsFiles.length >= 3) {
+        return { pass: true, evidence: ['docs/'], reason: `docs/ directory with ${docsFiles.length} documents found.` };
+      }
+      return { pass: false, evidence: [], reason: 'No architecture or design documentation found.' };
+    },
+  },
+  {
+    id: 'git-activity',
+    label: 'Repo has recent activity (commits in last 90 days)',
+    weight: 5,
+    required: false,
+    check(ctx) {
+      try {
+        const output = execSync('git log --since="90 days ago" --oneline', {
+          cwd: ctx.repoRoot,
+          encoding: 'utf8',
+          timeout: 5000,
+          stdio: ['pipe', 'pipe', 'pipe'],
+        }).trim();
+        const count = output ? output.split('\n').length : 0;
+        if (count > 0) {
+          return { pass: true, evidence: [`${count} commits in last 90 days`], reason: `Repo has ${count} commits in the last 90 days.` };
+        }
+        return { pass: false, evidence: [], reason: 'No commits in the last 90 days — repo appears inactive.' };
+      } catch {
+        return { pass: false, evidence: [], reason: 'Unable to read git log (may not be a git repo).' };
+      }
+    },
+  },
+  {
+    id: 'contributor-count',
+    label: 'Multiple contributors (team signal)',
+    weight: 4,
+    required: false,
+    check(ctx) {
+      try {
+        const output = execSync('git shortlog -sne --all', {
+          cwd: ctx.repoRoot,
+          encoding: 'utf8',
+          timeout: 5000,
+          stdio: ['pipe', 'pipe', 'pipe'],
+        }).trim();
+        const count = output ? output.split('\n').length : 0;
+        if (count >= 2) {
+          return { pass: true, evidence: [`${count} contributors`], reason: `Repo has ${count} contributors.` };
+        }
+        return { pass: false, evidence: [], reason: 'Only 1 contributor — no team signal.' };
+      } catch {
+        return { pass: false, evidence: [], reason: 'Unable to read git contributors.' };
+      }
+    },
+  },
 ];
 
 /**
  * Build the effective check list, applying overrides from .fundscore.yml.
- * @param {object} overrides - parsed .fundscore.yml
- * @returns {typeof DEFAULT_CHECKS}
  */
 function buildChecks(overrides) {
   const weightOverrides = (overrides && overrides.weights) || {};
@@ -231,10 +366,7 @@ function buildChecks(overrides) {
 }
 
 /**
- * Run all checks and return per-check results plus a normalised coverageScore (0-10).
- * @param {CheckContext} ctx
- * @param {object} overrides
- * @returns {{ coverageScore: number, checks: Array }}
+ * Run all checks and return per-check results plus a normalised score (0-100).
  */
 function runRubric(ctx, overrides = {}) {
   const checks = buildChecks(overrides);
@@ -258,9 +390,9 @@ function runRubric(ctx, overrides = {}) {
 
   const totalWeight = results.reduce((s, r) => s + r.weight, 0);
   const earnedWeight = results.reduce((s, r) => s + (r.pass ? r.weight : 0), 0);
-  const coverageScore = totalWeight > 0 ? Math.round((earnedWeight / totalWeight) * 100) / 10 : 0;
+  const score = totalWeight > 0 ? Math.round((earnedWeight / totalWeight) * 100 * 100) / 100 : 0;
 
-  return { coverageScore, checks: results };
+  return { score, checks: results };
 }
 
 module.exports = { runRubric, DEFAULT_CHECKS };

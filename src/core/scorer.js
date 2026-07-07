@@ -1,17 +1,27 @@
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
 const { readFile, findFile, listFiles, loadOverrides } = require('./loader');
 const { inferLens } = require('./lens');
 const { runRubric } = require('./rubric');
+const { computeBusiness } = require('./business');
 const { computeQuality } = require('./quality');
+const { buildLensReport } = require('./lens-report');
 
 /**
- * Default scoring weights.
+ * Default scoring weights (0-100 scale).
+ * Three dimensions: artifacts, business viability, quality.
  */
-const DEFAULT_WEIGHTS = { coverage: 0.6, quality: 0.4 };
+const DEFAULT_WEIGHTS = { artifacts: 0.5, business: 0.3, quality: 0.2 };
 
 /**
- * Build the check context used by both rubric and quality modules.
+ * Default thresholds (0-100 scale).
+ */
+const DEFAULT_THRESHOLDS = { warn: 50, fail: 30 };
+
+/**
+ * Build the check context used by all scoring modules.
  * @param {string} repoRoot
  * @param {string[]} files
  * @returns {object}
@@ -31,60 +41,93 @@ function buildContext(repoRoot, files) {
  * @returns {object} report
  */
 function score(repoRoot) {
-  const files = listFiles(repoRoot);
-  const overrides = loadOverrides(repoRoot);
-  const ctx = buildContext(repoRoot, files);
+  // BUG-1 fix: validate path exists
+  const resolved = path.resolve(repoRoot);
+  if (!fs.existsSync(resolved)) {
+    throw new Error(`Repository path does not exist: ${resolved}`);
+  }
+  const stat = fs.statSync(resolved);
+  if (!stat.isDirectory()) {
+    throw new Error(`Path is not a directory: ${resolved}`);
+  }
+
+  const files = listFiles(resolved);
+  const overrides = loadOverrides(resolved);
+  const ctx = buildContext(resolved, files);
 
   // Lens inference
   const textBlobs = [
-    readFile(repoRoot, 'README.md'),
-    readFile(repoRoot, 'FUNDING.md'),
-    readFile(repoRoot, 'ROADMAP.md'),
-    readFile(repoRoot, '.fundscore.yml'),
+    readFile(resolved, 'README.md'),
+    readFile(resolved, 'FUNDING.md'),
+    readFile(resolved, 'ROADMAP.md'),
+    readFile(resolved, '.fundscore.yml'),
   ];
   const lens = inferLens(textBlobs, overrides);
 
-  // Coverage score
-  const { coverageScore, checks } = runRubric(ctx, overrides);
+  // Dimension 1: Artifacts (coverage)
+  const { score: artifactsScore, checks } = runRubric(ctx, overrides);
 
-  // Quality score
+  // Dimension 2: Business viability (investor signal communication)
+  const { score: businessScore, checks: businessChecks } = computeBusiness(ctx, overrides);
+
+  // Dimension 3: Quality (heuristic text properties)
   const { qualityScore, dimensions } = computeQuality(ctx);
 
   // Weights (configurable via overrides)
   const weightOverrides = (overrides && overrides.scoring) || {};
-  const coverageWeight = weightOverrides.coverageWeight !== undefined
-    ? Number(weightOverrides.coverageWeight) : DEFAULT_WEIGHTS.coverage;
+  const artifactsWeight = weightOverrides.artifactsWeight !== undefined
+    ? Number(weightOverrides.artifactsWeight) : DEFAULT_WEIGHTS.artifacts;
+  const businessWeight = weightOverrides.businessWeight !== undefined
+    ? Number(weightOverrides.businessWeight) : DEFAULT_WEIGHTS.business;
   const qualityWeight = weightOverrides.qualityWeight !== undefined
     ? Number(weightOverrides.qualityWeight) : DEFAULT_WEIGHTS.quality;
 
-  const totalWeight = coverageWeight + qualityWeight;
+  const totalWeight = artifactsWeight + businessWeight + qualityWeight;
   const overallScore = Math.round(
-    ((coverageScore * coverageWeight + qualityScore * qualityWeight) / totalWeight) * 10
-  ) / 10;
+    ((artifactsScore * artifactsWeight + businessScore * businessWeight + qualityScore * qualityWeight) / totalWeight) * 100
+  ) / 100;
 
   // Thresholds
   const thresholds = {
-    warn: (overrides.thresholds && overrides.thresholds.warn) || 5,
-    fail: (overrides.thresholds && overrides.thresholds.fail) || 3,
+    warn: (overrides.thresholds && overrides.thresholds.warn) || DEFAULT_THRESHOLDS.warn,
+    fail: (overrides.thresholds && overrides.thresholds.fail) || DEFAULT_THRESHOLDS.fail,
   };
 
   const status = overallScore >= thresholds.warn ? 'pass'
     : overallScore >= thresholds.fail ? 'warn' : 'fail';
 
+  // Investor lens report (round-specific gap analysis)
+  const lensReport = buildLensReport(lens.round, { artifacts: checks, business: businessChecks });
+
+  // Score deltas for missing items
+  const allChecks = [...checks, ...businessChecks];
+  const missing = allChecks.filter((c) => !c.pass);
+  const fixDeltas = missing.map((c) => {
+    const maxScore = 100;
+    const totalCheckWeight = allChecks.reduce((s, r) => s + r.weight, 0);
+    const delta = Math.round((c.weight / totalCheckWeight) * maxScore * 10) / 10;
+    return { id: c.id, label: c.label, delta, reason: c.reason };
+  }).sort((a, b) => b.delta - a.delta);
+
   return {
-    repoRoot,
+    repoRoot: resolved,
+    // BUG-2 fix: generatedAt is metadata, not part of deterministic score
     generatedAt: new Date().toISOString(),
     lens,
+    lensReport,
     scores: {
-      coverageScore,
+      artifactsScore,
+      businessScore,
       qualityScore,
       overallScore,
-      weights: { coverage: coverageWeight, quality: qualityWeight },
+      weights: { artifacts: artifactsWeight, business: businessWeight, quality: qualityWeight },
     },
     status,
     thresholds,
     coverage: { checks },
+    business: { checks: businessChecks },
     quality: { dimensions },
+    fixDeltas,
   };
 }
 

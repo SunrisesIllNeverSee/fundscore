@@ -1,7 +1,7 @@
 {
   "name": "fundscore",
-  "version": "0.1.0",
-  "description": "Repo-only funding viability scorer — deterministic artifact coverage + heuristic quality scoring for investor readiness",
+  "version": "0.2.0",
+  "description": "Lighthouse for repos — deterministic investor-readiness scoring (artifacts + business viability + quality), CLI + GitHub Action",
   "main": "src/core/index.js",
   "bin": {
     "fundscore": "bin/fundscore.js"
@@ -16,7 +16,10 @@
     "investor-readiness",
     "github-action",
     "cli",
-    "scoring"
+    "scoring",
+    "lighthouse",
+    "repo-health",
+    "business-viability"
   ],
   "author": "SunrisesIllNeverSee",
   "license": "MIT",

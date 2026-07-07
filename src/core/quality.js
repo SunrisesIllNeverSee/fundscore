@@ -34,22 +34,22 @@ function fleschReadingEase(text) {
 }
 
 /**
- * Score readability of a text block. Returns 0-10.
+ * Score readability of a text block. Returns 0-100.
  * @param {string} text
  */
 function scoreReadability(text) {
-  if (!text || text.trim().length < 50) return 2;
+  if (!text || text.trim().length < 50) return 20;
   const fre = fleschReadingEase(text);
   // Target range 40-70 (plain English business writing)
-  if (fre >= 40 && fre <= 70) return 10;
-  if (fre > 70) return 8; // too simple but fine
-  if (fre >= 25) return 6;
-  return 4; // very dense academic prose
+  if (fre >= 40 && fre <= 70) return 100;
+  if (fre > 70) return 80; // too simple but fine
+  if (fre >= 25) return 60;
+  return 40; // very dense academic prose
 }
 
 /**
  * Score specificity: presence of concrete numbers, dates, metrics.
- * Returns 0-10.
+ * Returns 0-100.
  * @param {string} text
  */
 function scoreSpecificity(text) {
@@ -57,12 +57,12 @@ function scoreSpecificity(text) {
   const numberHits = (text.match(/\$[\d,.]+[kKmMbB]?|\b\d+[%x]\b|\b\d{4}\b|\b\d+\s*(users?|customers?|seats?|months?|days?)/gi) || []).length;
   // Up to 5 concrete number hits → full score
   const raw = Math.min(numberHits, 5) / 5;
-  return Math.round(raw * 10);
+  return Math.round(raw * 100);
 }
 
 /**
  * Score structure: headings, lists, code blocks in README.
- * Returns 0-10.
+ * Returns 0-100.
  * @param {string} text
  */
 function scoreStructure(text) {
@@ -70,34 +70,34 @@ function scoreStructure(text) {
   const headings = (text.match(/^#{1,4}\s+/gm) || []).length;
   const lists = (text.match(/^[\-\*\+]\s+|^\d+\.\s+/gm) || []).length;
   const codeBlocks = (text.match(/```/g) || []).length / 2;
-  const score = Math.min(4, headings) + Math.min(3, Math.floor(lists / 3)) + Math.min(3, codeBlocks);
-  return Math.round(Math.min(10, score));
+  const raw = Math.min(4, headings) + Math.min(3, Math.floor(lists / 3)) + Math.min(3, codeBlocks);
+  return Math.round(Math.min(10, raw) * 10);
 }
 
 /**
  * Score length: penalise sparse (<200 words) or padded (>3000 words) READMEs.
- * Returns 0-10.
+ * Returns 0-100.
  * @param {string} text
  */
 function scoreLength(text) {
   if (!text) return 0;
   const wordCount = (text.match(/\S+/g) || []).length;
-  if (wordCount < 50) return 1;
-  if (wordCount < 200) return 4;
-  if (wordCount <= 2000) return 10;
-  if (wordCount <= 3000) return 8;
-  return 6; // very long — probably padded
+  if (wordCount < 50) return 10;
+  if (wordCount < 200) return 40;
+  if (wordCount <= 2000) return 100;
+  if (wordCount <= 3000) return 80;
+  return 60; // very long — probably padded
 }
 
 /**
  * Score consistency: check for obvious numeric contradictions.
  * Simple heuristic: extract all standalone numbers and look for
  * significantly different values alongside the same unit keyword.
- * Returns 0-10 (starts at 10, penalises contradictions found).
+ * Returns 0-100 (starts at 100, penalises contradictions found).
  * @param {string} combinedText
  */
 function scoreConsistency(combinedText) {
-  if (!combinedText) return 10;
+  if (!combinedText) return 100;
   // Find all "N users" / "N customers" type claims
   const unitMatches = {};
   const pattern = /(\d[\d,]*)\s+(users?|customers?|seats?|clients?)/gi;
@@ -117,11 +117,11 @@ function scoreConsistency(combinedText) {
       if (max > min * 2) contradictions++;
     }
   }
-  return Math.max(0, 10 - contradictions * 3);
+  return Math.max(0, 100 - contradictions * 30);
 }
 
 /**
- * Compute the heuristic qualityScore (0-10) and per-dimension breakdown.
+ * Compute the heuristic qualityScore (0-100) and per-dimension breakdown.
  * @param {object} ctx - same context as rubric
  * @returns {{ qualityScore: number, dimensions: object }}
  */
@@ -141,7 +141,7 @@ function computeQuality(ctx) {
 
   const totalWeight = Object.values(dimensions).reduce((s, d) => s + d.weight, 0);
   const earned = Object.values(dimensions).reduce((s, d) => s + d.score * d.weight, 0);
-  const qualityScore = Math.round((earned / totalWeight) * 10) / 10;
+  const qualityScore = Math.round((earned / totalWeight) * 100) / 100;
 
   return { qualityScore, dimensions };
 }

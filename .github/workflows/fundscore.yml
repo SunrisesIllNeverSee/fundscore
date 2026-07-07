@@ -1,4 +1,4 @@
-name: Fundscore — Funding Viability Check
+name: Fundscore — Investor Readiness Check
 
 on:
   push:
