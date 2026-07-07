@@ -6,6 +6,12 @@
   "bin": {
     "fundscore": "bin/fundscore.js"
   },
+  "files": [
+    "bin/",
+    "src/",
+    ".fundscore.example.yml",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "node bin/fundscore.js",
     "lint": "eslint src bin tests --ext .js",
@@ -19,10 +25,22 @@
     "scoring",
     "lighthouse",
     "repo-health",
-    "business-viability"
+    "business-viability",
+    "mcp",
+    "model-context-protocol",
+    "ai-agent",
+    "deterministic"
   ],
   "author": "SunrisesIllNeverSee",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SunrisesIllNeverSee/fundscore.git"
+  },
+  "homepage": "https://github.com/SunrisesIllNeverSee/fundscore#readme",
+  "bugs": {
+    "url": "https://github.com/SunrisesIllNeverSee/fundscore/issues"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "js-yaml": "^4.1.0"
