@@ -74,6 +74,8 @@ fundscore history --save     # Save current score as a snapshot
 fundscore badge              # Output SVG badge
 fundscore badge --embed      # Output markdown badge snippet
 fundscore badge --save       # Save SVG badge to repo
+
+fundscore mcp                # Start MCP server (stdio) for AI agent integration
 ```
 
 ---
@@ -235,6 +237,61 @@ scoring:
 thresholds:
   warn: 50
   fail: 30
+```
+
+---
+
+## MCP server (AI agent integration)
+
+fundscore includes a built-in MCP server that exposes the scoring engine as tools for AI agents (Claude Code, Cursor, Windsurf, etc.). This puts fundscore inside the agent workflow — the agent can check your score, suggest fixes, and scaffold missing docs without you leaving the editor.
+
+### Setup
+
+Add to your MCP client config:
+
+```json
+{
+  "mcpServers": {
+    "fundscore": {
+      "command": "npx",
+      "args": ["-y", "fundscore", "mcp"]
+    }
+  }
+}
+```
+
+Or run directly:
+
+```bash
+fundscore mcp    # starts stdio MCP server
+```
+
+### Tools
+
+| Tool | What it does |
+|------|-------------|
+| `score_repo` | Score a repo, return agent-optimized report (dimensions, round analysis, top fixes, missing checks). Auto-saves a snapshot to `.fundscore-history/` to build score trajectory passively. |
+| `get_fix_plan` | Get scaffold plan for missing docs (read-only). Returns which files to create, what checks they fix, and score deltas. |
+| `apply_fixes` | Create template files for missing docs. `dryRun=true` (default) previews without writing. `dryRun=false` writes files. `force=true` overwrites existing. |
+
+### How agents use it
+
+The agent can:
+1. **Check your score** after changes — "Your fundscore went from 52 to 61. Here's what's still missing."
+2. **Suggest fixes proactively** — "Your repo has no RISKS.md. Adding one would bring your score from 63 to 67. Want me to scaffold it?"
+3. **Track trajectory** — every `score_repo` call auto-saves a snapshot, building the score history passively.
+4. **Give round-specific guidance** — "For a seed round, investors expect market evidence. Your README doesn't mention TAM or competitors."
+
+### The deterministic advantage
+
+An AI agent calling an LLM-powered scoring tool is circular — the agent is asking an LLM whether the repo looks good to an LLM. An AI agent calling fundscore is asking a **deterministic audit tool** for a reproducible score. The agent trusts the score because it's the same number every time.
+
+### Disable auto-save
+
+```yaml
+# .fundscore.yml
+history:
+  autoSave: false
 ```
 
 ---

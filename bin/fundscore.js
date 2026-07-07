@@ -28,7 +28,7 @@ for (let i = 0; i < args.length; i++) {
     flags.add(arg);
   } else if (!arg.startsWith('-')) {
     // Check if it's a command
-    if (positional.length === 0 && ['fix', 'history', 'badge'].includes(arg)) {
+    if (positional.length === 0 && ['fix', 'history', 'badge', 'mcp'].includes(arg)) {
       commands.add(arg);
     } else {
       positional.push(arg);
@@ -209,6 +209,16 @@ if (commands.has('badge')) {
   process.exit(0);
 }
 
+if (commands.has('mcp')) {
+  // mcp command: start stdio MCP server for AI agent integration
+  const { startMcpServer } = require('../src/mcp/server');
+  startMcpServer().catch((err) => {
+    process.stderr.write(`fundscore mcp error: ${err.message}\n`);
+    process.exit(1);
+  });
+  // The server runs until killed — don't fall through to default
+} else {
+
 // --- DEFAULT: score + report ---
 
 let report;
@@ -230,3 +240,5 @@ if (flags.has('--json')) {
 if (failBelow !== null && report.scores.overallScore < failBelow) {
   process.exit(1);
 }
+
+} // end else (not mcp)

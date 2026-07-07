@@ -24,6 +24,7 @@
   "author": "SunrisesIllNeverSee",
   "license": "MIT",
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
