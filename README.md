@@ -4,6 +4,16 @@
 
 > ⚠️ **Asterisk:** The score is a snapshot of repo-readiness signals, not a business valuation. It reflects what your repo *communicates*, not what your business *is*. The value compounds over time — score history is a track record that can't be backdated.
 
+<div align="center">
+
+[![fundscore](https://img.shields.io/badge/fundscore-64%2F100-dfb317.svg?style=flat-square)](https://github.com/SunrisesIllNeverSee/fundscore)
+[![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
+[![platform](https://img.shields.io/badge/platform-node-grey.svg?style=flat-square)](https://nodejs.org)
+[![npm](https://img.shields.io/npm/v/fundscore.svg?style=flat-square&color=gold)](https://www.npmjs.com/package/fundscore)
+[![MCP](https://img.shields.io/badge/MCP-server-purple.svg?style=flat-square)](https://modelcontextprotocol.io)
+
+</div>
+
 ---
 
 ## What it does
@@ -34,9 +44,31 @@ Plus a **Round-Specific Report**: auto-infers your funding round (pre-seed / see
 
 ---
 
+## Table of Contents
+
+- [What it does](#what-it-does)
+- [Quick start](#quick-start)
+- [The three dimensions](#the-three-dimensions)
+- [Round-Specific Reports](#round-specific-reports)
+- [`--fix` mode](#--fix-mode)
+- [Score history](#score-history-the-moat)
+- [Badge](#badge)
+- [Configuration](#configuration--fundscoreyml)
+- [MCP server](#mcp-server-ai-agent-integration)
+- [GitHub Action](#github-action)
+- [Design principles](#design-principles)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
 ## Quick start
 
 ```bash
+# Clone
+git clone https://github.com/SunrisesIllNeverSee/fundscore.git
+cd fundscore
+
 # Install
 npm install -g .
 
@@ -55,6 +87,8 @@ fundscore /path/to/repo
 # Fail CI if score below threshold
 fundscore --fail-below 50
 ```
+
+> **Prerequisites:** Node.js ≥ 18
 
 ### Commands
 
@@ -314,6 +348,16 @@ Uses only `GITHUB_TOKEN` — no additional secrets required.
 - **Honest** — the asterisk is prominent. The score reflects what your repo communicates, not what your business is.
 - **Actionable** — `--fix` mode tells you exactly what to do, and each fix shows its score impact.
 - **Alive** — score history grows with your repo. The trajectory is the product.
+
+---
+
+## Contributing
+
+Contributions welcome. fundscore is built in the open.
+
+- Report bugs via [GitHub Issues](https://github.com/SunrisesIllNeverSee/fundscore/issues)
+- PRs: fork → branch → `node tests/core.test.js` passes → open PR against `main`
+- Suggest new checks or dimension weights via Issues — include rationale and expected score impact
 
 ---
 
