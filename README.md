@@ -2,7 +2,7 @@
 
 **Deterministic investor-readiness scoring for GitHub repositories.** A no-LLM CLI tool and GitHub Action that scores your repo 0-100 across three dimensions — artifacts, business viability, and quality — and tells you exactly what to fix and by how much.
 
-> ⚠️ **Asterisk:** The score is a snapshot of repo-readiness signals, not a business valuation. It reflects what your repo *communicates*, not what your business *is*. The value compounds over time — score history is a track record that can't be backdated.
+> ⚠️ **Asterisk:** The score is a snapshot of repo-readiness signals, not a business valuation. It reflects what your repo _communicates_, not what your business _is_. The value compounds over time — score history is a track record that can't be backdated.
 
 <div align="center">
 
@@ -34,11 +34,11 @@ fundscore ✅ PASS
 
 Three dimensions, scored 0-100:
 
-| Dimension | What it measures | Weight |
-|-----------|-----------------|--------|
-| **Artifacts** | Does your repo have the docs investors expect? (18 checks: README, FUNDING, ROADMAP, RISKS, LICENSE, tests, CI, security, changelog, contributing, architecture, git activity, contributors, deployed URL, etc.) | 50% |
-| **Business Viability** | Does your repo communicate the signals investors look for? (7 checks: monetization clarity, recession resilience, pricing power, tech-enabled margins, contingency depth, market evidence, traction evidence) | 30% |
-| **Quality** | Are your docs readable, specific, well-structured, and consistent? (5 heuristic dimensions, no LLM) | 20% |
+| Dimension              | What it measures                                                                                                                                                                                                 | Weight |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| **Artifacts**          | Does your repo have the docs investors expect? (18 checks: README, FUNDING, ROADMAP, RISKS, LICENSE, tests, CI, security, changelog, contributing, architecture, git activity, contributors, deployed URL, etc.) | 50%    |
+| **Business Viability** | Does your repo communicate the signals investors look for? (7 checks: monetization clarity, recession resilience, pricing power, tech-enabled margins, contingency depth, market evidence, traction evidence)    | 30%    |
+| **Quality**            | Are your docs readable, specific, well-structured, and consistent? (5 heuristic dimensions, no LLM)                                                                                                              | 20%    |
 
 Plus a **Round-Specific Report**: auto-infers your funding round (pre-seed / seed / series-a / grant) and shows what investors expect at that round, what you have, and what's missing.
 
@@ -120,52 +120,52 @@ fundscore mcp                # Start MCP server (stdio) for AI agent integration
 
 Deterministic file-presence and content checks. Each has a weight; score = weighted pass rate × 100.
 
-| Check | Description | Weight |
-|-------|-------------|--------|
-| `readme-exists` | README.md is present | 8 |
-| `readme-oneliner` | README has a problem statement / one-liner | 7 |
-| `readme-cta` | README has a CTA or contact info | 5 |
-| `readme-demo` | README has a demo link or screenshot | 4 |
-| `deployed-url` | README mentions a live deployed product URL | 6 |
-| `funding-or-roadmap` | FUNDING.md or ROADMAP.md exists | 9 |
-| `market-comps` | COMPARABLES.md or market section in README | 7 |
-| `risks-honest` | RISKS.md or limitations section | 6 |
-| `license` | LICENSE file or licensing text | 5 |
-| `tests-or-ci` | Tests or CI present (multi-language: JS, Python, Rust, Go, Ruby, Java) | 5 |
-| `security` | SECURITY.md or dependency scanning config | 3 |
-| `contact-team` | Team or contact info mentioned | 5 |
-| `audience-customer` | Target audience / customer identified | 6 |
-| `changelog` | CHANGELOG.md or release history | 3 |
-| `contributing` | CONTRIBUTING.md exists | 3 |
-| `architecture` | ARCHITECTURE.md or docs/ structure | 4 |
-| `git-activity` | Commits in last 90 days (not a dead repo) | 5 |
-| `contributor-count` | 2+ contributors (team signal) | 4 |
+| Check                | Description                                                            | Weight |
+| -------------------- | ---------------------------------------------------------------------- | ------ |
+| `readme-exists`      | README.md is present                                                   | 8      |
+| `readme-oneliner`    | README has a problem statement / one-liner                             | 7      |
+| `readme-cta`         | README has a CTA or contact info                                       | 5      |
+| `readme-demo`        | README has a demo link or screenshot                                   | 4      |
+| `deployed-url`       | README mentions a live deployed product URL                            | 6      |
+| `funding-or-roadmap` | FUNDING.md or ROADMAP.md exists                                        | 9      |
+| `market-comps`       | COMPARABLES.md or market section in README                             | 7      |
+| `risks-honest`       | RISKS.md or limitations section                                        | 6      |
+| `license`            | LICENSE file or licensing text                                         | 5      |
+| `tests-or-ci`        | Tests or CI present (multi-language: JS, Python, Rust, Go, Ruby, Java) | 5      |
+| `security`           | SECURITY.md or dependency scanning config                              | 3      |
+| `contact-team`       | Team or contact info mentioned                                         | 5      |
+| `audience-customer`  | Target audience / customer identified                                  | 6      |
+| `changelog`          | CHANGELOG.md or release history                                        | 3      |
+| `contributing`       | CONTRIBUTING.md exists                                                 | 3      |
+| `architecture`       | ARCHITECTURE.md or docs/ structure                                     | 4      |
+| `git-activity`       | Commits in last 90 days (not a dead repo)                              | 5      |
+| `contributor-count`  | 2+ contributors (team signal)                                          | 4      |
 
 ### 2. Business Viability (7 checks)
 
-Checks whether your repo *communicates* the signals investors look for. Not "we evaluate your business" — "does your repo say the things investors need to hear?"
+Checks whether your repo _communicates_ the signals investors look for. Not "we evaluate your business" — "does your repo say the things investors need to hear?"
 
-| Check | Description | Weight |
-|-------|-------------|--------|
-| `monetization-clarity` | How the business makes money is stated (pricing, revenue model) | 8 |
-| `recession-resilience` | Recurring revenue, moat, fixed costs, diversification signals | 6 |
-| `pricing-power` | Switching costs, retention, CAC/LTV, upsell signals | 6 |
-| `tech-enabled-margins` | Automation, API, scale, AI, self-serve signals | 5 |
-| `contingency-depth` | Scenario planning, mitigation, runway, break-even | 4 |
-| `market-evidence` | TAM, competitors, positioning, growth rate | 6 |
-| `traction-evidence` | Users, revenue, growth metrics, testimonials | 7 |
+| Check                  | Description                                                     | Weight |
+| ---------------------- | --------------------------------------------------------------- | ------ |
+| `monetization-clarity` | How the business makes money is stated (pricing, revenue model) | 8      |
+| `recession-resilience` | Recurring revenue, moat, fixed costs, diversification signals   | 6      |
+| `pricing-power`        | Switching costs, retention, CAC/LTV, upsell signals             | 6      |
+| `tech-enabled-margins` | Automation, API, scale, AI, self-serve signals                  | 5      |
+| `contingency-depth`    | Scenario planning, mitigation, runway, break-even               | 4      |
+| `market-evidence`      | TAM, competitors, positioning, growth rate                      | 6      |
+| `traction-evidence`    | Users, revenue, growth metrics, testimonials                    | 7      |
 
 ### 3. Quality (5 heuristic dimensions)
 
 No LLM, no external API. Pure text analysis.
 
-| Dimension | What it measures | Weight |
-|-----------|-----------------|--------|
-| Readability | Flesch Reading Ease approximation | 3 |
-| Specificity | Concrete numbers, dates, metrics | 3 |
-| Structure | Headings, lists, code blocks | 2 |
-| Length | Not too sparse, not too padded | 1 |
-| Consistency | No contradicting numbers across docs | 1 |
+| Dimension   | What it measures                     | Weight |
+| ----------- | ------------------------------------ | ------ |
+| Readability | Flesch Reading Ease approximation    | 3      |
+| Specificity | Concrete numbers, dates, metrics     | 3      |
+| Structure   | Headings, lists, code blocks         | 2      |
+| Length      | Not too sparse, not too padded       | 1      |
+| Consistency | No contradicting numbers across docs | 1      |
 
 ---
 
@@ -173,12 +173,12 @@ No LLM, no external API. Pure text analysis.
 
 fundscore auto-infers your funding round and shows what investors expect:
 
-| Round | Check Size | What investors want |
-|-------|-----------|-------------------|
-| **Pre-Seed** | $250k-$500k | Problem, team, early signals of life |
-| **Seed** | $1M-$3M | Working product, real market, path to revenue |
-| **Series A** | $5M-$15M | Real traction, governance, scale, defensible moat |
-| **Grant** | varies | Public benefit, open access, reproducibility |
+| Round        | Check Size  | What investors want                               |
+| ------------ | ----------- | ------------------------------------------------- |
+| **Pre-Seed** | $250k-$500k | Problem, team, early signals of life              |
+| **Seed**     | $1M-$3M     | Working product, real market, path to revenue     |
+| **Series A** | $5M-$15M    | Real traction, governance, scale, defensible moat |
+| **Grant**    | varies      | Public benefit, open access, reproducibility      |
 
 Each round has **required** (60% of round score), **expected** (30%), and **bonus** (10%) checks. The report shows what you have, what's missing, and your round-specific score.
 
@@ -302,15 +302,16 @@ fundscore mcp    # starts stdio MCP server
 
 ### Tools
 
-| Tool | What it does |
-|------|-------------|
-| `score_repo` | Score a repo, return agent-optimized report (dimensions, round analysis, top fixes, missing checks). Auto-saves a snapshot to `.fundscore-history/` to build score trajectory passively. |
-| `get_fix_plan` | Get scaffold plan for missing docs (read-only). Returns which files to create, what checks they fix, and score deltas. |
-| `apply_fixes` | Create template files for missing docs. `dryRun=true` (default) previews without writing. `dryRun=false` writes files. `force=true` overwrites existing. |
+| Tool           | What it does                                                                                                                                                                             |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `score_repo`   | Score a repo, return agent-optimized report (dimensions, round analysis, top fixes, missing checks). Auto-saves a snapshot to `.fundscore-history/` to build score trajectory passively. |
+| `get_fix_plan` | Get scaffold plan for missing docs (read-only). Returns which files to create, what checks they fix, and score deltas.                                                                   |
+| `apply_fixes`  | Create template files for missing docs. `dryRun=true` (default) previews without writing. `dryRun=false` writes files. `force=true` overwrites existing.                                 |
 
 ### How agents use it
 
 The agent can:
+
 1. **Check your score** after changes — "Your fundscore went from 52 to 61. Here's what's still missing."
 2. **Suggest fixes proactively** — "Your repo has no RISKS.md. Adding one would bring your score from 63 to 67. Want me to scaffold it?"
 3. **Track trajectory** — every `score_repo` call auto-saves a snapshot, building the score history passively.

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Infer an "Investor Lens" from repo artifacts and optional overrides.
@@ -11,17 +11,23 @@
  */
 
 const ROUND_PATTERNS = [
-  { pattern: /\bpre[- ]seed\b/i, round: 'pre-seed', checkSize: '$250k' },
-  { pattern: /\bseries[- ]?a\b/i, round: 'series-a', checkSize: '$5M' },
-  { pattern: /\bseed\b/i, round: 'seed', checkSize: '$1.5M' },
-  { pattern: /\bgrant\b/i, round: 'grant', checkSize: 'varies' },
-  { pattern: /\bsafe\b/i, round: 'seed', checkSize: '$1.5M' },
+  { pattern: /\bpre[- ]seed\b/i, round: "pre-seed", checkSize: "$250k" },
+  { pattern: /\bseries[- ]?a\b/i, round: "series-a", checkSize: "$5M" },
+  { pattern: /\bseed\b/i, round: "seed", checkSize: "$1.5M" },
+  { pattern: /\bgrant\b/i, round: "grant", checkSize: "varies" },
+  { pattern: /\bsafe\b/i, round: "seed", checkSize: "$1.5M" },
 ];
 
 const TEAM_PATTERNS = [
-  { pattern: /\bsolo\s+founder\b|\bsole\s+founder\b|\bsingle\s+founder\b/i, teamMode: 'solo' },
-  { pattern: /\bco[- ]?founder|founding\s+team\b/i, teamMode: 'small-team' },
-  { pattern: /\boperating\s+team\b|\bfull\s+team\b|\bstaff\b/i, teamMode: 'operating-team' },
+  {
+    pattern: /\bsolo\s+founder\b|\bsole\s+founder\b|\bsingle\s+founder\b/i,
+    teamMode: "solo",
+  },
+  { pattern: /\bco[- ]?founder|founding\s+team\b/i, teamMode: "small-team" },
+  {
+    pattern: /\boperating\s+team\b|\bfull\s+team\b|\bstaff\b/i,
+    teamMode: "operating-team",
+  },
 ];
 
 const NAICS_PATTERN = /naics[:\s#*_]+(\d{4,6})/i;
@@ -33,11 +39,11 @@ const NAICS_PATTERN = /naics[:\s#*_]+(\d{4,6})/i;
  * @returns {{ round: string, checkSize: string, teamMode: string, naics: string, confidence: object }}
  */
 function inferLens(textBlobs, overrides = {}) {
-  const combined = textBlobs.filter(Boolean).join('\n');
+  const combined = textBlobs.filter(Boolean).join("\n");
 
   // Round
-  let round = 'unknown';
-  let checkSize = 'unknown';
+  let round = "unknown";
+  let checkSize = "unknown";
   for (const { pattern, round: r, checkSize: c } of ROUND_PATTERNS) {
     if (pattern.test(combined)) {
       round = r;
@@ -47,7 +53,7 @@ function inferLens(textBlobs, overrides = {}) {
   }
 
   // Team mode
-  let teamMode = 'unknown';
+  let teamMode = "unknown";
   for (const { pattern, teamMode: t } of TEAM_PATTERNS) {
     if (pattern.test(combined)) {
       teamMode = t;
@@ -56,7 +62,7 @@ function inferLens(textBlobs, overrides = {}) {
   }
 
   // NAICS
-  let naics = 'unknown';
+  let naics = "unknown";
   const naicsMatch = combined.match(NAICS_PATTERN);
   if (naicsMatch) naics = naicsMatch[1];
 
@@ -68,9 +74,21 @@ function inferLens(textBlobs, overrides = {}) {
     teamMode: lensOverrides.teamMode || teamMode,
     naics: lensOverrides.naics || naics,
     confidence: {
-      round: lensOverrides.round ? 'override' : round !== 'unknown' ? 'inferred' : 'default',
-      teamMode: lensOverrides.teamMode ? 'override' : teamMode !== 'unknown' ? 'inferred' : 'default',
-      naics: lensOverrides.naics ? 'override' : naics !== 'unknown' ? 'inferred' : 'default',
+      round: lensOverrides.round
+        ? "override"
+        : round !== "unknown"
+          ? "inferred"
+          : "default",
+      teamMode: lensOverrides.teamMode
+        ? "override"
+        : teamMode !== "unknown"
+          ? "inferred"
+          : "default",
+      naics: lensOverrides.naics
+        ? "override"
+        : naics !== "unknown"
+          ? "inferred"
+          : "default",
     },
   };
 }

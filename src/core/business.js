@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Business viability — investor signal communication checks.
@@ -13,12 +13,13 @@
 
 const BUSINESS_CHECKS = [
   {
-    id: 'monetization-clarity',
-    label: 'How the business makes money is clearly stated',
+    id: "monetization-clarity",
+    label: "How the business makes money is clearly stated",
     weight: 8,
     required: false,
     check(ctx) {
-      const content = (ctx.readFile('README.md') || '') + (ctx.readFile('FUNDING.md') || '');
+      const content =
+        (ctx.readFile("README.md") || "") + (ctx.readFile("FUNDING.md") || "");
       const patterns = [
         /\b(?:revenue|monetiz|pricing|subscription|freemium|saas|paying|paid|tier|plan)\b/i,
         /\$\d+.*?(?:\/mo|\/year|per month|per year|\/user|per user)/i,
@@ -27,21 +28,32 @@ const BUSINESS_CHECKS = [
       ];
       const hits = patterns.filter((p) => p.test(content));
       if (hits.length >= 1) {
-        return { pass: true, evidence: ['README.md'], reason: 'Repo mentions monetization, pricing, or revenue model.' };
+        return {
+          pass: true,
+          evidence: ["README.md"],
+          reason: "Repo mentions monetization, pricing, or revenue model.",
+        };
       }
-      return { pass: false, evidence: [], reason: 'No mention of how the business makes money (pricing, revenue model, monetization).' };
+      return {
+        pass: false,
+        evidence: [],
+        reason:
+          "No mention of how the business makes money (pricing, revenue model, monetization).",
+      };
     },
   },
   {
-    id: 'recession-resilience',
-    label: 'Recession resilience signals (recurring revenue, moat, fixed costs)',
+    id: "recession-resilience",
+    label:
+      "Recession resilience signals (recurring revenue, moat, fixed costs)",
     weight: 6,
     required: false,
     check(ctx) {
-      const content = (ctx.readFile('README.md') || '') +
-        (ctx.readFile('FUNDING.md') || '') +
-        (ctx.readFile('RISKS.md') || '') +
-        (ctx.readFile('ROADMAP.md') || '');
+      const content =
+        (ctx.readFile("README.md") || "") +
+        (ctx.readFile("FUNDING.md") || "") +
+        (ctx.readFile("RISKS.md") || "") +
+        (ctx.readFile("ROADMAP.md") || "");
       const signals = [
         /\brecurring\s+(?:revenue|payment|subscription)/i,
         /\b(?:moat|defensible|defensibility|switching\s+cost|sticky|lock-?in)\b/i,
@@ -50,20 +62,30 @@ const BUSINESS_CHECKS = [
       ];
       const hits = signals.filter((p) => p.test(content));
       if (hits.length >= 1) {
-        return { pass: true, evidence: ['README.md'], reason: `${hits.length} recession-resilience signal(s) found.` };
+        return {
+          pass: true,
+          evidence: ["README.md"],
+          reason: `${hits.length} recession-resilience signal(s) found.`,
+        };
       }
-      return { pass: false, evidence: [], reason: 'No recession-resilience signals (recurring revenue, moat, fixed costs, diversification).' };
+      return {
+        pass: false,
+        evidence: [],
+        reason:
+          "No recession-resilience signals (recurring revenue, moat, fixed costs, diversification).",
+      };
     },
   },
   {
-    id: 'pricing-power',
-    label: 'Pricing power signals (switching costs, sticky product, CAC)',
+    id: "pricing-power",
+    label: "Pricing power signals (switching costs, sticky product, CAC)",
     weight: 6,
     required: false,
     check(ctx) {
-      const content = (ctx.readFile('README.md') || '') +
-        (ctx.readFile('FUNDING.md') || '') +
-        (ctx.readFile('ROADMAP.md') || '');
+      const content =
+        (ctx.readFile("README.md") || "") +
+        (ctx.readFile("FUNDING.md") || "") +
+        (ctx.readFile("ROADMAP.md") || "");
       const signals = [
         /\b(?:switching\s+cost|sticky|churn|retention|loyalty)\b/i,
         /\b(?:recurring|subscription|annual\s+contract|multi-?year)\b/i,
@@ -73,20 +95,30 @@ const BUSINESS_CHECKS = [
       ];
       const hits = signals.filter((p) => p.test(content));
       if (hits.length >= 1) {
-        return { pass: true, evidence: ['README.md'], reason: `${hits.length} pricing-power signal(s) found.` };
+        return {
+          pass: true,
+          evidence: ["README.md"],
+          reason: `${hits.length} pricing-power signal(s) found.`,
+        };
       }
-      return { pass: false, evidence: [], reason: 'No pricing-power signals (switching costs, retention, CAC/LTV, upsell).' };
+      return {
+        pass: false,
+        evidence: [],
+        reason:
+          "No pricing-power signals (switching costs, retention, CAC/LTV, upsell).",
+      };
     },
   },
   {
-    id: 'tech-enabled-margins',
-    label: 'Tech-enabled margin signals (automation, API, scale)',
+    id: "tech-enabled-margins",
+    label: "Tech-enabled margin signals (automation, API, scale)",
     weight: 5,
     required: false,
     check(ctx) {
-      const content = (ctx.readFile('README.md') || '') +
-        (ctx.readFile('ROADMAP.md') || '') +
-        (ctx.readFile('FUNDING.md') || '');
+      const content =
+        (ctx.readFile("README.md") || "") +
+        (ctx.readFile("ROADMAP.md") || "") +
+        (ctx.readFile("FUNDING.md") || "");
       const signals = [
         /\b(?:automat|api|async|pipeline|workflow|orchestrat)/i,
         /\b(?:scale|scalable|throughput|efficiency|productivity)/i,
@@ -96,43 +128,63 @@ const BUSINESS_CHECKS = [
       ];
       const hits = signals.filter((p) => p.test(content));
       if (hits.length >= 2) {
-        return { pass: true, evidence: ['README.md'], reason: `${hits.length} tech-margin signal(s) found.` };
+        return {
+          pass: true,
+          evidence: ["README.md"],
+          reason: `${hits.length} tech-margin signal(s) found.`,
+        };
       }
-      return { pass: false, evidence: [], reason: 'Insufficient tech-margin signals (need 2+: automation, API, scale, AI, self-serve).' };
+      return {
+        pass: false,
+        evidence: [],
+        reason:
+          "Insufficient tech-margin signals (need 2+: automation, API, scale, AI, self-serve).",
+      };
     },
   },
   {
-    id: 'contingency-depth',
-    label: 'Contingency / downside planning (scenario planning, risk mitigation)',
+    id: "contingency-depth",
+    label:
+      "Contingency / downside planning (scenario planning, risk mitigation)",
     weight: 4,
     required: false,
     check(ctx) {
-      const risks = ctx.readFile('RISKS.md') || '';
-      const roadmap = ctx.readFile('ROADMAP.md') || '';
-      const readme = ctx.readFile('README.md') || '';
+      const risks = ctx.readFile("RISKS.md") || "";
+      const roadmap = ctx.readFile("ROADMAP.md") || "";
+      const readme = ctx.readFile("README.md") || "";
       const signals = [
         /scenario|downside|worst\s+case|fallback|plan\s+b|contingenc/i,
         /mitigat|hedge|diversif|backup|failover|resilien/i,
         /if.*?(?:fail|doesn't|does\s+not|shuts?|pivot)/i,
         /runway|burn\s+rate|cash\s+flow|break-?even/i,
       ];
-      const combined = risks + '\n' + roadmap + '\n' + readme;
+      const combined = risks + "\n" + roadmap + "\n" + readme;
       const hits = signals.filter((p) => p.test(combined));
       if (hits.length >= 1) {
-        return { pass: true, evidence: ['RISKS.md'], reason: `${hits.length} contingency signal(s) found.` };
+        return {
+          pass: true,
+          evidence: ["RISKS.md"],
+          reason: `${hits.length} contingency signal(s) found.`,
+        };
       }
-      return { pass: false, evidence: [], reason: 'No contingency/downside planning signals (scenario, mitigation, runway, break-even).' };
+      return {
+        pass: false,
+        evidence: [],
+        reason:
+          "No contingency/downside planning signals (scenario, mitigation, runway, break-even).",
+      };
     },
   },
   {
-    id: 'market-evidence',
-    label: 'Market evidence (market size, competitors, positioning)',
+    id: "market-evidence",
+    label: "Market evidence (market size, competitors, positioning)",
     weight: 6,
     required: false,
     check(ctx) {
-      const content = (ctx.readFile('README.md') || '') +
-        (ctx.readFile('FUNDING.md') || '') +
-        (ctx.readFile('COMPARABLES.md') || '');
+      const content =
+        (ctx.readFile("README.md") || "") +
+        (ctx.readFile("FUNDING.md") || "") +
+        (ctx.readFile("COMPARABLES.md") || "");
       const signals = [
         /\b(?:tam|sam|som|market\s+size|total\s+addressable)\b/i,
         /\b(?:competitor|comparable|comp|alternative|incumbent)\b/i,
@@ -142,20 +194,30 @@ const BUSINESS_CHECKS = [
       ];
       const hits = signals.filter((p) => p.test(content));
       if (hits.length >= 1) {
-        return { pass: true, evidence: ['README.md'], reason: `${hits.length} market-evidence signal(s) found.` };
+        return {
+          pass: true,
+          evidence: ["README.md"],
+          reason: `${hits.length} market-evidence signal(s) found.`,
+        };
       }
-      return { pass: false, evidence: [], reason: 'No market-evidence signals (TAM, competitors, positioning, growth rate).' };
+      return {
+        pass: false,
+        evidence: [],
+        reason:
+          "No market-evidence signals (TAM, competitors, positioning, growth rate).",
+      };
     },
   },
   {
-    id: 'traction-evidence',
-    label: 'Traction evidence (users, revenue, growth metrics)',
+    id: "traction-evidence",
+    label: "Traction evidence (users, revenue, growth metrics)",
     weight: 7,
     required: false,
     check(ctx) {
-      const content = (ctx.readFile('README.md') || '') +
-        (ctx.readFile('FUNDING.md') || '') +
-        (ctx.readFile('ROADMAP.md') || '');
+      const content =
+        (ctx.readFile("README.md") || "") +
+        (ctx.readFile("FUNDING.md") || "") +
+        (ctx.readFile("ROADMAP.md") || "");
       const signals = [
         /\b\d+\s*(?:users?|customers?|signups?|accounts?|subscribers?)\b/i,
         /\$\d+[kKmM]?\s*(?:arr|mrr|revenue|monthly|annual)/i,
@@ -166,9 +228,18 @@ const BUSINESS_CHECKS = [
       ];
       const hits = signals.filter((p) => p.test(content));
       if (hits.length >= 1) {
-        return { pass: true, evidence: ['README.md'], reason: `${hits.length} traction signal(s) found.` };
+        return {
+          pass: true,
+          evidence: ["README.md"],
+          reason: `${hits.length} traction signal(s) found.`,
+        };
       }
-      return { pass: false, evidence: [], reason: 'No traction signals (users, revenue, growth metrics, testimonials).' };
+      return {
+        pass: false,
+        evidence: [],
+        reason:
+          "No traction signals (users, revenue, growth metrics, testimonials).",
+      };
     },
   },
 ];
@@ -182,8 +253,14 @@ function buildBusinessChecks(overrides) {
 
   return BUSINESS_CHECKS.map((check) => ({
     ...check,
-    weight: weightOverrides[check.id] !== undefined ? Number(weightOverrides[check.id]) : check.weight,
-    required: requiredOverrides[check.id] !== undefined ? Boolean(requiredOverrides[check.id]) : check.required,
+    weight:
+      weightOverrides[check.id] !== undefined
+        ? Number(weightOverrides[check.id])
+        : check.weight,
+    required:
+      requiredOverrides[check.id] !== undefined
+        ? Boolean(requiredOverrides[check.id])
+        : check.required,
   }));
 }
 
@@ -197,7 +274,11 @@ function computeBusiness(ctx, overrides = {}) {
     try {
       result = check.check(ctx);
     } catch (err) {
-      result = { pass: false, evidence: [], reason: `Check error: ${err.message}` };
+      result = {
+        pass: false,
+        evidence: [],
+        reason: `Check error: ${err.message}`,
+      };
     }
     return {
       id: check.id,
@@ -206,13 +287,16 @@ function computeBusiness(ctx, overrides = {}) {
       required: check.required,
       pass: result.pass,
       evidence: result.evidence || [],
-      reason: result.reason || '',
+      reason: result.reason || "",
     };
   });
 
   const totalWeight = results.reduce((s, r) => s + r.weight, 0);
   const earnedWeight = results.reduce((s, r) => s + (r.pass ? r.weight : 0), 0);
-  const score = totalWeight > 0 ? Math.round((earnedWeight / totalWeight) * 100 * 100) / 100 : 0;
+  const score =
+    totalWeight > 0
+      ? Math.round((earnedWeight / totalWeight) * 100 * 100) / 100
+      : 0;
 
   return { score, checks: results };
 }

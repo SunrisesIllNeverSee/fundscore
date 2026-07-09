@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = {
   env: {
@@ -9,10 +9,10 @@ module.exports = {
     ecmaVersion: 2022,
   },
   rules: {
-    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    'no-console': 'off',
-    'semi': ['error', 'always'],
-    'quotes': ['error', 'single', { avoidEscape: true }],
-    'eqeqeq': ['error', 'always'],
+    "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "no-console": "off",
+    semi: ["error", "always"],
+    quotes: ["error", "single", { avoidEscape: true }],
+    eqeqeq: ["error", "always"],
   },
 };

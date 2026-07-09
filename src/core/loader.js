@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 /**
  * Read a file from the workspace root. Returns null if not found.
@@ -12,7 +12,7 @@ const path = require('path');
 function readFile(repoRoot, filePath) {
   const full = path.resolve(repoRoot, filePath);
   try {
-    return fs.readFileSync(full, 'utf8');
+    return fs.readFileSync(full, "utf8");
   } catch {
     return null;
   }
@@ -56,10 +56,18 @@ function listFiles(repoRoot, maxDepth = 4) {
       return;
     }
     for (const entry of entries) {
-      if (entry.name.startsWith('.') && entry.name !== '.fundscore.yml') continue;
+      if (entry.name.startsWith(".") && entry.name !== ".fundscore.yml")
+        continue;
       const rel = path.relative(repoRoot, path.join(dir, entry.name));
       if (entry.isDirectory()) {
-        const skip = ['node_modules', 'dist', 'build', '.git', 'coverage', '.nyc_output'];
+        const skip = [
+          "node_modules",
+          "dist",
+          "build",
+          ".git",
+          "coverage",
+          ".nyc_output",
+        ];
         if (skip.includes(entry.name)) continue;
         walk(path.join(dir, entry.name), depth + 1);
       } else {
@@ -78,8 +86,8 @@ function listFiles(repoRoot, maxDepth = 4) {
  * @returns {object}
  */
 function loadOverrides(repoRoot) {
-  const yaml = require('js-yaml');
-  const raw = readFile(repoRoot, '.fundscore.yml');
+  const yaml = require("js-yaml");
+  const raw = readFile(repoRoot, ".fundscore.yml");
   if (!raw) return {};
   try {
     return yaml.load(raw) || {};

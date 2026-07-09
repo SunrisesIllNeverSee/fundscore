@@ -48,6 +48,7 @@ Each stage makes the next one possible. You don't build stage 3 until stage 1 wo
 ### Dimension 1: Artifacts (0-10) — expanded coverage
 
 Current 12 checks, plus:
+
 - [ ] `deployed-url` — README mentions a live deployed URL (not just any URL)
 - [ ] `changelog` — CHANGELOG.md or GitHub releases exists
 - [ ] `contributing` — CONTRIBUTING.md exists (signals serious project)

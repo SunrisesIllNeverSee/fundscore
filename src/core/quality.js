@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Heuristic quality scoring — no external LLM calls.
@@ -29,7 +29,8 @@ function fleschReadingEase(text) {
     return sum + (matches ? matches.length : 1);
   }, 0);
   const avgSyllablesPerWord = syllables / words.length;
-  const score = 206.835 - 1.015 * avgWordsPerSentence - 84.6 * avgSyllablesPerWord;
+  const score =
+    206.835 - 1.015 * avgWordsPerSentence - 84.6 * avgSyllablesPerWord;
   return Math.max(0, Math.min(100, score));
 }
 
@@ -54,7 +55,11 @@ function scoreReadability(text) {
  */
 function scoreSpecificity(text) {
   if (!text) return 0;
-  const numberHits = (text.match(/\$[\d,.]+[kKmMbB]?|\b\d+[%x]\b|\b\d{4}\b|\b\d+\s*(users?|customers?|seats?|months?|days?)/gi) || []).length;
+  const numberHits = (
+    text.match(
+      /\$[\d,.]+[kKmMbB]?|\b\d+[%x]\b|\b\d{4}\b|\b\d+\s*(users?|customers?|seats?|months?|days?)/gi,
+    ) || []
+  ).length;
   // Up to 5 concrete number hits → full score
   const raw = Math.min(numberHits, 5) / 5;
   return Math.round(raw * 100);
@@ -70,7 +75,10 @@ function scoreStructure(text) {
   const headings = (text.match(/^#{1,4}\s+/gm) || []).length;
   const lists = (text.match(/^[\-\*\+]\s+|^\d+\.\s+/gm) || []).length;
   const codeBlocks = (text.match(/```/g) || []).length / 2;
-  const raw = Math.min(4, headings) + Math.min(3, Math.floor(lists / 3)) + Math.min(3, codeBlocks);
+  const raw =
+    Math.min(4, headings) +
+    Math.min(3, Math.floor(lists / 3)) +
+    Math.min(3, codeBlocks);
   return Math.round(Math.min(10, raw) * 10);
 }
 
@@ -103,8 +111,8 @@ function scoreConsistency(combinedText) {
   const pattern = /(\d[\d,]*)\s+(users?|customers?|seats?|clients?)/gi;
   let m;
   while ((m = pattern.exec(combinedText)) !== null) {
-    const unit = m[2].toLowerCase().replace(/s$/, '');
-    const val = parseInt(m[1].replace(/,/g, ''), 10);
+    const unit = m[2].toLowerCase().replace(/s$/, "");
+    const val = parseInt(m[1].replace(/,/g, ""), 10);
     if (!unitMatches[unit]) unitMatches[unit] = [];
     unitMatches[unit].push(val);
   }
@@ -126,24 +134,53 @@ function scoreConsistency(combinedText) {
  * @returns {{ qualityScore: number, dimensions: object }}
  */
 function computeQuality(ctx) {
-  const readme = ctx.readFile('README.md') || '';
-  const funding = ctx.readFile('FUNDING.md') || '';
-  const roadmap = ctx.readFile('ROADMAP.md') || '';
-  const combined = [readme, funding, roadmap].join('\n');
+  const readme = ctx.readFile("README.md") || "";
+  const funding = ctx.readFile("FUNDING.md") || "";
+  const roadmap = ctx.readFile("ROADMAP.md") || "";
+  const combined = [readme, funding, roadmap].join("\n");
 
   const dimensions = {
-    readability: { score: scoreReadability(readme), weight: 3, label: 'Readability (README)' },
-    specificity: { score: scoreSpecificity(combined), weight: 3, label: 'Specificity (concrete numbers/metrics)' },
-    structure: { score: scoreStructure(readme), weight: 2, label: 'Document structure (headings/lists)' },
-    length: { score: scoreLength(readme), weight: 1, label: 'README length' },
-    consistency: { score: scoreConsistency(combined), weight: 1, label: 'Internal consistency' },
+    readability: {
+      score: scoreReadability(readme),
+      weight: 3,
+      label: "Readability (README)",
+    },
+    specificity: {
+      score: scoreSpecificity(combined),
+      weight: 3,
+      label: "Specificity (concrete numbers/metrics)",
+    },
+    structure: {
+      score: scoreStructure(readme),
+      weight: 2,
+      label: "Document structure (headings/lists)",
+    },
+    length: { score: scoreLength(readme), weight: 1, label: "README length" },
+    consistency: {
+      score: scoreConsistency(combined),
+      weight: 1,
+      label: "Internal consistency",
+    },
   };
 
-  const totalWeight = Object.values(dimensions).reduce((s, d) => s + d.weight, 0);
-  const earned = Object.values(dimensions).reduce((s, d) => s + d.score * d.weight, 0);
+  const totalWeight = Object.values(dimensions).reduce(
+    (s, d) => s + d.weight,
+    0,
+  );
+  const earned = Object.values(dimensions).reduce(
+    (s, d) => s + d.score * d.weight,
+    0,
+  );
   const qualityScore = Math.round((earned / totalWeight) * 100) / 100;
 
   return { qualityScore, dimensions };
 }
 
-module.exports = { computeQuality, scoreReadability, scoreSpecificity, scoreStructure, scoreLength, scoreConsistency };
+module.exports = {
+  computeQuality,
+  scoreReadability,
+  scoreSpecificity,
+  scoreStructure,
+  scoreLength,
+  scoreConsistency,
+};

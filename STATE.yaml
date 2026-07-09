@@ -149,7 +149,12 @@ mcp_server:
       returns: "currentScore, files[], totalPotentialGain"
     - name: apply_fixes
       description: "Create template files for missing docs"
-      params: ["repoPath (optional)", "dryRun (default: true)", "force (default: false)"]
+      params:
+        [
+          "repoPath (optional)",
+          "dryRun (default: true)",
+          "force (default: false)",
+        ]
       returns: "written, skipped, previousScore, newScore, scoreDelta"
   auto_save: true
   auto_save_config: ".fundscore.yml → history.autoSave: false to disable"
