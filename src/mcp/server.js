@@ -28,7 +28,7 @@ const {
 } = require("@modelcontextprotocol/sdk/types.js");
 
 const { score } = require("../core/index");
-const { getFixPlan, TEMPLATES } = require("../core/templates");
+const { getFixPlan } = require("../core/templates");
 
 // --- Tool definitions ---
 
@@ -143,7 +143,6 @@ function buildAgentReport(report) {
     lensReport,
     coverage,
     business,
-    quality,
     fixDeltas,
     status,
     thresholds,

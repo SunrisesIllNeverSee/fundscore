@@ -82,7 +82,7 @@ if (commands.has("fix")) {
       const content = item.template(repoRoot);
       fs.writeFileSync(fullPath, content);
       process.stdout.write(
-        `  ✅ Created ${item.file} (fixes: ${item.checks.join(", ")})\n`,
+        `  ✅ Created ${item.file} (fixes: ${item.checks.join(', ')})\n`,
       );
       written++;
     }
@@ -98,10 +98,10 @@ if (commands.has("fix")) {
       );
     }
     process.stdout.write(
-      `\n  Run \`fundscore fix --apply\` to create these files.\n`,
+      '\n  Run `fundscore fix --apply` to create these files.\n',
     );
     process.stdout.write(
-      `  Run \`fundscore fix --apply --force\` to overwrite existing files.\n`,
+      '  Run `fundscore fix --apply --force` to overwrite existing files.\n',
     );
   }
   process.exit(0);

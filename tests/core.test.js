@@ -8,10 +8,7 @@ const { score } = require("../src/core/index");
 const { inferLens } = require("../src/core/lens");
 const { runRubric } = require("../src/core/rubric");
 const { computeBusiness } = require("../src/core/business");
-const {
-  buildLensReport,
-  ROUND_CHECKLISTS,
-} = require("../src/core/lens-report");
+const { buildLensReport } = require("../src/core/lens-report");
 const {
   scoreReadability,
   scoreSpecificity,
