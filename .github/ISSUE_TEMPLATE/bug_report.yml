@@ -1,0 +1,53 @@
+name: Bug Report
+description: Report a bug in fundscore
+title: "[BUG]: "
+labels: ["bug", "triage"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of fundscore is affected?
+      options:
+        - CLI
+        - MCP server
+        - Scoring engine
+        - Artifacts checks
+        - Business checks
+        - Quality checks
+        - --fix mode
+        - Score history
+        - Badge generation
+        - GitHub Action
+        - Other / not sure
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run `fundscore ...`
+        2. See ...
+    validations:
+      required: false
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "Node 20, macOS 14"
+    validations:
+      required: true
