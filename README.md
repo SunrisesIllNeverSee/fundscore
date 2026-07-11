@@ -6,7 +6,7 @@
 
 <div align="center">
 
-[![fundscore](https://img.shields.io/badge/fundscore-64%2F100-dfb317.svg?style=flat-square)](https://github.com/SunrisesIllNeverSee/fundscore)
+[![fundscore](https://img.shields.io/badge/fundscore-82%2F100-dfb317.svg?style=flat-square)](https://github.com/SunrisesIllNeverSee/fundscore)
 [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
 [![platform](https://img.shields.io/badge/platform-node-grey.svg?style=flat-square)](https://nodejs.org)
 [![npm](https://img.shields.io/npm/v/fundscore.svg?style=flat-square&color=gold)](https://www.npmjs.com/package/fundscore)
@@ -229,7 +229,7 @@ Score history is a track record. A repo that went 42 → 58 → 71 over 6 months
 
 ```bash
 $ fundscore badge --embed
-[![fundscore](https://img.shields.io/badge/fundscore-64%2F100-dfb317)](https://github.com/SunrisesIllNeverSee/fundscore)
+[![fundscore](https://img.shields.io/badge/fundscore-82%2F100-dfb317)](https://github.com/SunrisesIllNeverSee/fundscore)
 ```
 
 Embed in your README. The badge signals investor-readiness, same way a Lighthouse badge signals web quality.
