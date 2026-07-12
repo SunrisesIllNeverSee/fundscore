@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^5.2.1"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
