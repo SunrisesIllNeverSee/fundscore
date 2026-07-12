@@ -73,7 +73,7 @@ function scoreSpecificity(text) {
 function scoreStructure(text) {
   if (!text) return 0;
   const headings = (text.match(/^#{1,4}\s+/gm) || []).length;
-  const lists = (text.match(/^[\-\*\+]\s+|^\d+\.\s+/gm) || []).length;
+  const lists = (text.match(/^[-*+]\s+|^\d+\.\s+/gm) || []).length;
   const codeBlocks = (text.match(/```/g) || []).length / 2;
   const raw =
     Math.min(4, headings) +
