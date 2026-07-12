@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-const { execSync } = require("child_process");
+const { execSync } = require('child_process');
 
 /**
  * Coverage rubric — deterministic checklist-based scoring (0-100).
@@ -14,53 +14,53 @@ const { execSync } = require("child_process");
 
 const DEFAULT_CHECKS = [
   {
-    id: "readme-exists",
-    label: "README.md exists",
+    id: 'readme-exists',
+    label: 'README.md exists',
     weight: 8,
     required: true,
     check(ctx) {
-      const found = ctx.findFile("README.md");
+      const found = ctx.findFile('README.md');
       if (!found)
-        return { pass: false, evidence: [], reason: "No README.md found." };
-      return { pass: true, evidence: [found], reason: "README.md is present." };
+        return { pass: false, evidence: [], reason: 'No README.md found.' };
+      return { pass: true, evidence: [found], reason: 'README.md is present.' };
     },
   },
   {
-    id: "readme-oneliner",
-    label: "README contains a one-liner / problem statement",
+    id: 'readme-oneliner',
+    label: 'README contains a one-liner / problem statement',
     weight: 7,
     required: false,
     check(ctx) {
-      const content = ctx.readFile("README.md") || "";
+      const content = ctx.readFile('README.md') || '';
       const lines = content
-        .split("\n")
+        .split('\n')
         .map((l) => l.trim())
         .filter(Boolean);
       const firstPara = lines.find(
-        (l) => !l.startsWith("#") && l.split(/\s+/).length >= 5,
+        (l) => !l.startsWith('#') && l.split(/\s+/).length >= 5,
       );
       if (firstPara) {
         return {
           pass: true,
-          evidence: ["README.md"],
-          reason: "README appears to contain a one-liner or description.",
+          evidence: ['README.md'],
+          reason: 'README appears to contain a one-liner or description.',
         };
       }
       return {
         pass: false,
-        evidence: ["README.md"],
+        evidence: ['README.md'],
         reason:
-          "README lacks a meaningful description/one-liner after the title.",
+          'README lacks a meaningful description/one-liner after the title.',
       };
     },
   },
   {
-    id: "readme-cta",
-    label: "README contains a CTA or contact info",
+    id: 'readme-cta',
+    label: 'README contains a CTA or contact info',
     weight: 5,
     required: false,
     check(ctx) {
-      const content = ctx.readFile("README.md") || "";
+      const content = ctx.readFile('README.md') || '';
       const ctaPatterns = [
         /contact/i,
         /reach\s+out/i,
@@ -77,45 +77,45 @@ const DEFAULT_CHECKS = [
       if (found)
         return {
           pass: true,
-          evidence: ["README.md"],
-          reason: "README contains a CTA or contact reference.",
+          evidence: ['README.md'],
+          reason: 'README contains a CTA or contact reference.',
         };
       return {
         pass: false,
-        evidence: ["README.md"],
-        reason: "README lacks a call-to-action or contact information.",
+        evidence: ['README.md'],
+        reason: 'README lacks a call-to-action or contact information.',
       };
     },
   },
   {
-    id: "readme-demo",
-    label: "README contains a demo link or screenshot",
+    id: 'readme-demo',
+    label: 'README contains a demo link or screenshot',
     weight: 4,
     required: false,
     check(ctx) {
-      const content = ctx.readFile("README.md") || "";
+      const content = ctx.readFile('README.md') || '';
       if (/https?:\/\/[^\s)]+|!\[.*?\]\(/.test(content)) {
         return {
           pass: true,
-          evidence: ["README.md"],
-          reason: "README contains a URL or image (possible demo/screenshot).",
+          evidence: ['README.md'],
+          reason: 'README contains a URL or image (possible demo/screenshot).',
         };
       }
       return {
         pass: false,
         evidence: [],
-        reason: "README has no demo link or embedded image.",
+        reason: 'README has no demo link or embedded image.',
       };
     },
   },
   {
-    id: "deployed-url",
-    label: "Live deployed product URL mentioned",
+    id: 'deployed-url',
+    label: 'Live deployed product URL mentioned',
     weight: 6,
     required: false,
     check(ctx) {
       const content =
-        (ctx.readFile("README.md") || "") + (ctx.readFile("FUNDING.md") || "");
+        (ctx.readFile('README.md') || '') + (ctx.readFile('FUNDING.md') || '');
       // Look for deployed product URLs (not just any URL — exclude github.com, npm, etc.)
       const deployedPatterns = [
         /https?:\/\/(?!github\.com|npmjs\.com|pypi\.org|registry\.|docs\.google|raw\.github)[^\s)]+\.(?:com|io|app|dev|ai|xyz|co|net|org)/i,
@@ -129,27 +129,27 @@ const DEFAULT_CHECKS = [
       if (found)
         return {
           pass: true,
-          evidence: ["README.md"],
-          reason: "README mentions a live deployed product URL.",
+          evidence: ['README.md'],
+          reason: 'README mentions a live deployed product URL.',
         };
       return {
         pass: false,
         evidence: [],
-        reason: "No live deployed product URL found in README.",
+        reason: 'No live deployed product URL found in README.',
       };
     },
   },
   {
-    id: "funding-or-roadmap",
-    label: "Funding or roadmap document exists (FUNDING.md / ROADMAP.md)",
+    id: 'funding-or-roadmap',
+    label: 'Funding or roadmap document exists (FUNDING.md / ROADMAP.md)',
     weight: 9,
     required: false,
     check(ctx) {
       const candidates = [
-        "FUNDING.md",
-        "ROADMAP.md",
-        "docs/FUNDING.md",
-        "docs/ROADMAP.md",
+        'FUNDING.md',
+        'ROADMAP.md',
+        'docs/FUNDING.md',
+        'docs/ROADMAP.md',
       ];
       for (const c of candidates) {
         const found = ctx.findFile(c);
@@ -159,121 +159,121 @@ const DEFAULT_CHECKS = [
       return {
         pass: false,
         evidence: [],
-        reason: "No FUNDING.md or ROADMAP.md found.",
+        reason: 'No FUNDING.md or ROADMAP.md found.',
       };
     },
   },
   {
-    id: "market-comps",
-    label: "Market / comparables document exists",
+    id: 'market-comps',
+    label: 'Market / comparables document exists',
     weight: 7,
     required: false,
     check(ctx) {
       const candidates = [
-        "COMPARABLES.md",
-        "COMP-SCORE.md",
-        "docs/COMPARABLES.md",
-        "docs/MARKET.md",
-        "MARKET.md",
+        'COMPARABLES.md',
+        'COMP-SCORE.md',
+        'docs/COMPARABLES.md',
+        'docs/MARKET.md',
+        'MARKET.md',
       ];
       for (const c of candidates) {
         const found = ctx.findFile(c);
         if (found)
           return { pass: true, evidence: [found], reason: `Found ${found}.` };
       }
-      const readme = ctx.readFile("README.md") || "";
+      const readme = ctx.readFile('README.md') || '';
       if (
         /##?\s*(comparable|competitor|market|comps|landscape)/i.test(readme)
       ) {
         return {
           pass: true,
-          evidence: ["README.md"],
-          reason: "README contains a comparables/market section.",
+          evidence: ['README.md'],
+          reason: 'README contains a comparables/market section.',
         };
       }
       return {
         pass: false,
         evidence: [],
-        reason: "No market/comparables document or README section found.",
+        reason: 'No market/comparables document or README section found.',
       };
     },
   },
   {
-    id: "risks-honest",
-    label: "Risks / honest assessment document exists",
+    id: 'risks-honest',
+    label: 'Risks / honest assessment document exists',
     weight: 6,
     required: false,
     check(ctx) {
       const candidates = [
-        "RISKS.md",
-        "COMP-SCORE.md",
-        "docs/RISKS.md",
-        "LIMITATIONS.md",
+        'RISKS.md',
+        'COMP-SCORE.md',
+        'docs/RISKS.md',
+        'LIMITATIONS.md',
       ];
       for (const c of candidates) {
         const found = ctx.findFile(c);
         if (found)
           return { pass: true, evidence: [found], reason: `Found ${found}.` };
       }
-      const readme = ctx.readFile("README.md") || "";
+      const readme = ctx.readFile('README.md') || '';
       if (/##?\s*(risk|limitation|caveat|honest|warning)/i.test(readme)) {
         return {
           pass: true,
-          evidence: ["README.md"],
-          reason: "README contains a risks/limitations section.",
+          evidence: ['README.md'],
+          reason: 'README contains a risks/limitations section.',
         };
       }
       return {
         pass: false,
         evidence: [],
-        reason: "No risks/limitations document found.",
+        reason: 'No risks/limitations document found.',
       };
     },
   },
   {
-    id: "license",
-    label: "License / IP posture stated",
+    id: 'license',
+    label: 'License / IP posture stated',
     weight: 5,
     required: false,
     check(ctx) {
-      const licenseFiles = ["LICENSE", "LICENSE.md", "LICENSE.txt", "COPYING"];
+      const licenseFiles = ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'COPYING'];
       for (const f of licenseFiles) {
         if (ctx.findFile(f))
           return { pass: true, evidence: [f], reason: `${f} found.` };
       }
-      const readme = ctx.readFile("README.md") || "";
+      const readme = ctx.readFile('README.md') || '';
       if (
         /licen[sc]e|copyright|all\s+rights\s+reserved|proprietary/i.test(readme)
       ) {
         return {
           pass: true,
-          evidence: ["README.md"],
-          reason: "README mentions license or IP posture.",
+          evidence: ['README.md'],
+          reason: 'README mentions license or IP posture.',
         };
       }
       return {
         pass: false,
         evidence: [],
-        reason: "No license file or licensing mention found.",
+        reason: 'No license file or licensing mention found.',
       };
     },
   },
   {
-    id: "tests-or-ci",
-    label: "Tests or CI present (multi-language)",
+    id: 'tests-or-ci',
+    label: 'Tests or CI present (multi-language)',
     weight: 5,
     required: false,
     check(ctx) {
       // Node.js: package.json with test script
-      const pkg = ctx.readFile("package.json");
+      const pkg = ctx.readFile('package.json');
       if (pkg) {
         try {
           const parsed = JSON.parse(pkg);
           if (parsed.scripts && parsed.scripts.test) {
             return {
               pass: true,
-              evidence: ["package.json"],
-              reason: "package.json has a test script.",
+              evidence: ['package.json'],
+              reason: 'package.json has a test script.',
             };
           }
         } catch {
@@ -288,7 +288,7 @@ const DEFAULT_CHECKS = [
         return {
           pass: true,
           evidence: [jsTest],
-          reason: "JS test files detected.",
+          reason: 'JS test files detected.',
         };
       // Python: pytest, unittest, tox, nox
       const pyTest = ctx.files.find((f) =>
@@ -300,17 +300,17 @@ const DEFAULT_CHECKS = [
         return {
           pass: true,
           evidence: [pyTest],
-          reason: "Python test files detected.",
+          reason: 'Python test files detected.',
         };
       // Rust: cargo test
       if (
-        ctx.findFile("Cargo.toml") &&
-        ctx.files.some((f) => f.startsWith("tests/"))
+        ctx.findFile('Cargo.toml') &&
+        ctx.files.some((f) => f.startsWith('tests/'))
       ) {
         return {
           pass: true,
-          evidence: ["Cargo.toml", "tests/"],
-          reason: "Rust test directory detected.",
+          evidence: ['Cargo.toml', 'tests/'],
+          reason: 'Rust test directory detected.',
         };
       }
       // Go: _test.go files
@@ -319,7 +319,7 @@ const DEFAULT_CHECKS = [
         return {
           pass: true,
           evidence: [goTest],
-          reason: "Go test files detected.",
+          reason: 'Go test files detected.',
         };
       // Ruby: rspec, minitest
       const rubyTest = ctx.files.find((f) =>
@@ -327,22 +327,22 @@ const DEFAULT_CHECKS = [
       );
       if (
         rubyTest &&
-        ctx.readFile("Gemfile") &&
-        /rspec|minitest/.test(ctx.readFile("Gemfile"))
+        ctx.readFile('Gemfile') &&
+        /rspec|minitest/.test(ctx.readFile('Gemfile'))
       ) {
         return {
           pass: true,
           evidence: [rubyTest],
-          reason: "Ruby test files detected.",
+          reason: 'Ruby test files detected.',
         };
       }
       // Java: pom.xml with surefire, build.gradle with test
-      const pom = ctx.readFile("pom.xml");
+      const pom = ctx.readFile('pom.xml');
       if (pom && /surefire|junit|testng/i.test(pom)) {
         return {
           pass: true,
-          evidence: ["pom.xml"],
-          reason: "Java test config detected (Maven).",
+          evidence: ['pom.xml'],
+          reason: 'Java test config detected (Maven).',
         };
       }
       const gradle = ctx.files.find((f) =>
@@ -356,7 +356,7 @@ const DEFAULT_CHECKS = [
         return {
           pass: true,
           evidence: [gradle],
-          reason: "Java test config detected (Gradle).",
+          reason: 'Java test config detected (Gradle).',
         };
       }
       // CI config (any language)
@@ -367,25 +367,25 @@ const DEFAULT_CHECKS = [
         return {
           pass: true,
           evidence: [ciFile],
-          reason: "CI workflow detected.",
+          reason: 'CI workflow detected.',
         };
       return {
         pass: false,
         evidence: [],
-        reason: "No test files or CI configuration found.",
+        reason: 'No test files or CI configuration found.',
       };
     },
   },
   {
-    id: "security",
-    label: "Security posture hint present",
+    id: 'security',
+    label: 'Security posture hint present',
     weight: 3,
     required: false,
     check(ctx) {
       const candidates = [
-        "SECURITY.md",
-        ".github/SECURITY.md",
-        "docs/SECURITY.md",
+        'SECURITY.md',
+        '.github/SECURITY.md',
+        'docs/SECURITY.md',
       ];
       for (const c of candidates) {
         if (ctx.findFile(c))
@@ -398,25 +398,25 @@ const DEFAULT_CHECKS = [
         return {
           pass: true,
           evidence: [depScan],
-          reason: "Dependency scanning config detected.",
+          reason: 'Dependency scanning config detected.',
         };
       return {
         pass: false,
         evidence: [],
-        reason: "No SECURITY.md or dependency scanning config found.",
+        reason: 'No SECURITY.md or dependency scanning config found.',
       };
     },
   },
   {
-    id: "contact-team",
-    label: "Contact or team info present",
+    id: 'contact-team',
+    label: 'Contact or team info present',
     weight: 5,
     required: false,
     check(ctx) {
       const content =
-        (ctx.readFile("README.md") || "") +
-        (ctx.readFile("FUNDING.md") || "") +
-        (ctx.readFile("TEAM.md") || "");
+        (ctx.readFile('README.md') || '') +
+        (ctx.readFile('FUNDING.md') || '') +
+        (ctx.readFile('TEAM.md') || '');
       if (
         /\b(team|founder|author|built\s+by|contact|email|linkedin|twitter|github\.com\/[a-z])/i.test(
           content,
@@ -424,24 +424,24 @@ const DEFAULT_CHECKS = [
       ) {
         return {
           pass: true,
-          evidence: ["README.md"],
-          reason: "Team or contact info referenced.",
+          evidence: ['README.md'],
+          reason: 'Team or contact info referenced.',
         };
       }
       return {
         pass: false,
         evidence: [],
-        reason: "No team or contact information found.",
+        reason: 'No team or contact information found.',
       };
     },
   },
   {
-    id: "audience-customer",
-    label: "Audience or customer clearly identified",
+    id: 'audience-customer',
+    label: 'Audience or customer clearly identified',
     weight: 6,
     required: false,
     check(ctx) {
-      const content = ctx.readFile("README.md") || "";
+      const content = ctx.readFile('README.md') || '';
       if (
         /\b(customer|user|client|audience|target|for\s+[a-z]|designed\s+for|built\s+for|who\s+(is|are|this)|use\s+case)\b/i.test(
           content,
@@ -449,30 +449,30 @@ const DEFAULT_CHECKS = [
       ) {
         return {
           pass: true,
-          evidence: ["README.md"],
-          reason: "README identifies audience or target customer.",
+          evidence: ['README.md'],
+          reason: 'README identifies audience or target customer.',
         };
       }
       return {
         pass: false,
         evidence: [],
-        reason: "README does not clearly identify audience or customer.",
+        reason: 'README does not clearly identify audience or customer.',
       };
     },
   },
   // --- NEW CHECKS (Phase 1 expansion) ---
   {
-    id: "changelog",
-    label: "CHANGELOG or release history exists",
+    id: 'changelog',
+    label: 'CHANGELOG or release history exists',
     weight: 3,
     required: false,
     check(ctx) {
       const candidates = [
-        "CHANGELOG.md",
-        "CHANGELOG",
-        "CHANGES.md",
-        "HISTORY.md",
-        "docs/CHANGELOG.md",
+        'CHANGELOG.md',
+        'CHANGELOG',
+        'CHANGES.md',
+        'HISTORY.md',
+        'docs/CHANGELOG.md',
       ];
       for (const c of candidates) {
         const found = ctx.findFile(c);
@@ -482,41 +482,41 @@ const DEFAULT_CHECKS = [
       return {
         pass: false,
         evidence: [],
-        reason: "No changelog or release history found.",
+        reason: 'No changelog or release history found.',
       };
     },
   },
   {
-    id: "contributing",
-    label: "CONTRIBUTING.md exists (signals serious project)",
+    id: 'contributing',
+    label: 'CONTRIBUTING.md exists (signals serious project)',
     weight: 3,
     required: false,
     check(ctx) {
       const candidates = [
-        "CONTRIBUTING.md",
-        ".github/CONTRIBUTING.md",
-        "docs/CONTRIBUTING.md",
+        'CONTRIBUTING.md',
+        '.github/CONTRIBUTING.md',
+        'docs/CONTRIBUTING.md',
       ];
       for (const c of candidates) {
         const found = ctx.findFile(c);
         if (found)
           return { pass: true, evidence: [found], reason: `Found ${found}.` };
       }
-      return { pass: false, evidence: [], reason: "No CONTRIBUTING.md found." };
+      return { pass: false, evidence: [], reason: 'No CONTRIBUTING.md found.' };
     },
   },
   {
-    id: "architecture",
-    label: "Architecture / technical design docs exist",
+    id: 'architecture',
+    label: 'Architecture / technical design docs exist',
     weight: 4,
     required: false,
     check(ctx) {
       const candidates = [
-        "ARCHITECTURE.md",
-        "docs/ARCHITECTURE.md",
-        "DESIGN.md",
-        "docs/DESIGN.md",
-        "docs/architecture",
+        'ARCHITECTURE.md',
+        'docs/ARCHITECTURE.md',
+        'DESIGN.md',
+        'docs/DESIGN.md',
+        'docs/architecture',
       ];
       for (const c of candidates) {
         const found = ctx.findFile(c);
@@ -525,36 +525,36 @@ const DEFAULT_CHECKS = [
       }
       // Check for docs/ directory with multiple files
       const docsFiles = ctx.files.filter(
-        (f) => f.startsWith("docs/") && /\.(md|rst|txt)$/i.test(f),
+        (f) => f.startsWith('docs/') && /\.(md|rst|txt)$/i.test(f),
       );
       if (docsFiles.length >= 3) {
         return {
           pass: true,
-          evidence: ["docs/"],
+          evidence: ['docs/'],
           reason: `docs/ directory with ${docsFiles.length} documents found.`,
         };
       }
       return {
         pass: false,
         evidence: [],
-        reason: "No architecture or design documentation found.",
+        reason: 'No architecture or design documentation found.',
       };
     },
   },
   {
-    id: "git-activity",
-    label: "Repo has recent activity (commits in last 90 days)",
+    id: 'git-activity',
+    label: 'Repo has recent activity (commits in last 90 days)',
     weight: 5,
     required: false,
     check(ctx) {
       try {
         const output = execSync('git log --since="90 days ago" --oneline', {
           cwd: ctx.repoRoot,
-          encoding: "utf8",
+          encoding: 'utf8',
           timeout: 5000,
-          stdio: ["pipe", "pipe", "pipe"],
+          stdio: ['pipe', 'pipe', 'pipe'],
         }).trim();
-        const count = output ? output.split("\n").length : 0;
+        const count = output ? output.split('\n').length : 0;
         if (count > 0) {
           return {
             pass: true,
@@ -565,31 +565,31 @@ const DEFAULT_CHECKS = [
         return {
           pass: false,
           evidence: [],
-          reason: "No commits in the last 90 days — repo appears inactive.",
+          reason: 'No commits in the last 90 days — repo appears inactive.',
         };
       } catch {
         return {
           pass: false,
           evidence: [],
-          reason: "Unable to read git log (may not be a git repo).",
+          reason: 'Unable to read git log (may not be a git repo).',
         };
       }
     },
   },
   {
-    id: "contributor-count",
-    label: "Multiple contributors (team signal)",
+    id: 'contributor-count',
+    label: 'Multiple contributors (team signal)',
     weight: 4,
     required: false,
     check(ctx) {
       try {
-        const output = execSync("git shortlog -sne --all", {
+        const output = execSync('git shortlog -sne --all', {
           cwd: ctx.repoRoot,
-          encoding: "utf8",
+          encoding: 'utf8',
           timeout: 5000,
-          stdio: ["pipe", "pipe", "pipe"],
+          stdio: ['pipe', 'pipe', 'pipe'],
         }).trim();
-        const count = output ? output.split("\n").length : 0;
+        const count = output ? output.split('\n').length : 0;
         if (count >= 2) {
           return {
             pass: true,
@@ -600,13 +600,13 @@ const DEFAULT_CHECKS = [
         return {
           pass: false,
           evidence: [],
-          reason: "Only 1 contributor — no team signal.",
+          reason: 'Only 1 contributor — no team signal.',
         };
       } catch {
         return {
           pass: false,
           evidence: [],
-          reason: "Unable to read git contributors.",
+          reason: 'Unable to read git contributors.',
         };
       }
     },
@@ -656,7 +656,7 @@ function runRubric(ctx, overrides = {}) {
       required: check.required,
       pass: result.pass,
       evidence: result.evidence || [],
-      reason: result.reason || "",
+      reason: result.reason || '',
     };
   });
 

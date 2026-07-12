@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * fundscore MCP server — exposes the scoring engine as MCP tools
@@ -14,89 +14,89 @@
  * This passively builds the score trajectory — the moat.
  */
 
-const path = require("path");
-const fs = require("fs");
-const { Server } = require("@modelcontextprotocol/sdk/server/index.js");
+const path = require('path');
+const fs = require('fs');
+const { Server } = require('@modelcontextprotocol/sdk/server/index.js');
 const {
   StdioServerTransport,
-} = require("@modelcontextprotocol/sdk/server/stdio.js");
+} = require('@modelcontextprotocol/sdk/server/stdio.js');
 const {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   McpError,
   ErrorCode,
-} = require("@modelcontextprotocol/sdk/types.js");
+} = require('@modelcontextprotocol/sdk/types.js');
 
-const { score } = require("../core/index");
-const { getFixPlan } = require("../core/templates");
+const { score } = require('../core/index');
+const { getFixPlan } = require('../core/templates');
 
 // --- Tool definitions ---
 
 const TOOLS = [
   {
-    name: "score_repo",
+    name: 'score_repo',
     description: [
-      "Score a GitHub repository for investor readiness (0-100 scale).",
-      "Returns three dimension scores (artifacts, business viability, quality),",
-      "a round-specific gap analysis, top fixes with score deltas, and missing checks.",
-      "The score is a snapshot of repo-readiness signals, not a business valuation.",
-      "Auto-saves a snapshot to .fundscore-history/ to build score trajectory over time.",
-    ].join(" "),
+      'Score a GitHub repository for investor readiness (0-100 scale).',
+      'Returns three dimension scores (artifacts, business viability, quality),',
+      'a round-specific gap analysis, top fixes with score deltas, and missing checks.',
+      'The score is a snapshot of repo-readiness signals, not a business valuation.',
+      'Auto-saves a snapshot to .fundscore-history/ to build score trajectory over time.',
+    ].join(' '),
     inputSchema: {
-      type: "object",
+      type: 'object',
       properties: {
         repoPath: {
-          type: "string",
+          type: 'string',
           description:
-            "Absolute or relative path to the repository root. Defaults to current working directory.",
+            'Absolute or relative path to the repository root. Defaults to current working directory.',
         },
       },
     },
   },
   {
-    name: "get_fix_plan",
+    name: 'get_fix_plan',
     description: [
-      "Get a scaffold plan for missing investor-readiness docs.",
-      "Returns the list of template files that would be created (FUNDING.md, ROADMAP.md, RISKS.md, etc.),",
-      "which checks each file would fix, and the score delta for each fix.",
-      "Read-only — does not write any files.",
-    ].join(" "),
+      'Get a scaffold plan for missing investor-readiness docs.',
+      'Returns the list of template files that would be created (FUNDING.md, ROADMAP.md, RISKS.md, etc.),',
+      'which checks each file would fix, and the score delta for each fix.',
+      'Read-only — does not write any files.',
+    ].join(' '),
     inputSchema: {
-      type: "object",
+      type: 'object',
       properties: {
         repoPath: {
-          type: "string",
+          type: 'string',
           description:
-            "Absolute or relative path to the repository root. Defaults to current working directory.",
+            'Absolute or relative path to the repository root. Defaults to current working directory.',
         },
       },
     },
   },
   {
-    name: "apply_fixes",
+    name: 'apply_fixes',
     description: [
-      "Create template files for missing investor-readiness docs.",
-      "Generates scaffold templates (FUNDING.md, ROADMAP.md, RISKS.md, SECURITY.md, etc.)",
-      "that the founder can fill in. Use dryRun=true to preview without writing.",
-      "Does not overwrite existing files unless force=true.",
-    ].join(" "),
+      'Create template files for missing investor-readiness docs.',
+      'Generates scaffold templates (FUNDING.md, ROADMAP.md, RISKS.md, SECURITY.md, etc.)',
+      'that the founder can fill in. Use dryRun=true to preview without writing.',
+      'Does not overwrite existing files unless force=true.',
+    ].join(' '),
     inputSchema: {
-      type: "object",
+      type: 'object',
       properties: {
         repoPath: {
-          type: "string",
+          type: 'string',
           description:
-            "Absolute or relative path to the repository root. Defaults to current working directory.",
+            'Absolute or relative path to the repository root. Defaults to current working directory.',
         },
         dryRun: {
-          type: "boolean",
+          type: 'boolean',
           description:
-            "If true, return what would be created without writing any files. Default: true.",
+            'If true, return what would be created without writing any files. Default: true.',
           default: true,
         },
         force: {
-          type: "boolean",
-          description: "If true, overwrite existing files. Default: false.",
+          type: 'boolean',
+          description: 'If true, overwrite existing files. Default: false.',
           default: false,
         },
       },
@@ -116,14 +116,14 @@ function resolveRepoPath(repoPath) {
  */
 function autoSaveSnapshot(repoRoot, report) {
   try {
-    const { loadOverrides } = require("../core/loader");
+    const { loadOverrides } = require('../core/loader');
     const overrides = loadOverrides(repoRoot);
     const autoSave = overrides?.history?.autoSave !== false; // default true
     if (!autoSave) return false;
 
-    const historyDir = path.join(repoRoot, ".fundscore-history");
+    const historyDir = path.join(repoRoot, '.fundscore-history');
     fs.mkdirSync(historyDir, { recursive: true });
-    const ts = new Date().toISOString().replace(/[:.]/g, "-");
+    const ts = new Date().toISOString().replace(/[:.]/g, '-');
     const historyFile = path.join(historyDir, `fundscore-${ts}.json`);
     fs.writeFileSync(historyFile, JSON.stringify(report, null, 2));
     return true;
@@ -153,20 +153,20 @@ function buildAgentReport(report) {
     .map((c) => ({
       id: c.id,
       label: c.label,
-      dimension: coverage.checks.includes(c) ? "artifacts" : "business",
+      dimension: coverage.checks.includes(c) ? 'artifacts' : 'business',
       reason: c.reason,
     }));
 
   const roundMissing = lensReport
     ? {
         required: lensReport.missing
-          .filter((m) => m.category === "required")
+          .filter((m) => m.category === 'required')
           .map((m) => m.id),
         expected: lensReport.missing
-          .filter((m) => m.category === "expected")
+          .filter((m) => m.category === 'expected')
           .map((m) => m.id),
         bonus: lensReport.missing
-          .filter((m) => m.category === "bonus")
+          .filter((m) => m.category === 'bonus')
           .map((m) => m.id),
       }
     : null;
@@ -174,10 +174,10 @@ function buildAgentReport(report) {
   return {
     overallScore: scores.overallScore,
     status,
-    scale: "0-100",
+    scale: '0-100',
     thresholds,
     asterisk:
-      "Snapshot of repo-readiness signals, not a business valuation. The score reflects what your repo communicates, not what your business is.",
+      'Snapshot of repo-readiness signals, not a business valuation. The score reflects what your repo communicates, not what your business is.',
     dimensions: {
       artifacts: {
         score: scores.artifactsScore,
@@ -250,7 +250,7 @@ function handleGetFixPlan(args) {
         const fd = report.fixDeltas.find((f) => f.id === id);
         return fd
           ? { id, delta: fd.delta, label: fd.label }
-          : { id, delta: 0, label: "" };
+          : { id, delta: 0, label: '' };
       }),
     })),
     totalPotentialGain: fixPlan.reduce((sum, item) => {
@@ -262,7 +262,7 @@ function handleGetFixPlan(args) {
         }, 0)
       );
     }, 0),
-    note: "Read-only. Use apply_fixes to create the files.",
+    note: 'Read-only. Use apply_fixes to create the files.',
   };
 }
 
@@ -280,7 +280,7 @@ function handleApplyFixes(args) {
     return {
       repoPath: repoRoot,
       dryRun,
-      message: "Nothing to scaffold. All templateable checks are passing.",
+      message: 'Nothing to scaffold. All templateable checks are passing.',
       files: [],
     };
   }
@@ -290,12 +290,12 @@ function handleApplyFixes(args) {
       repoPath: repoRoot,
       dryRun: true,
       message:
-        "Dry run — no files written. Set dryRun=false to create the files.",
+        'Dry run — no files written. Set dryRun=false to create the files.',
       files: fixPlan.map((item) => ({
         file: item.file,
         fixes: item.checks,
         preview:
-          item.template(repoRoot).split("\n").slice(0, 10).join("\n") + "\n...",
+          item.template(repoRoot).split('\n').slice(0, 10).join('\n') + '\n...',
       })),
     };
   }
@@ -310,8 +310,8 @@ function handleApplyFixes(args) {
     if (fs.existsSync(fullPath) && !force) {
       results.push({
         file: item.file,
-        status: "skipped",
-        reason: "already exists (use force=true to overwrite)",
+        status: 'skipped',
+        reason: 'already exists (use force=true to overwrite)',
       });
       skipped++;
       continue;
@@ -319,7 +319,7 @@ function handleApplyFixes(args) {
     const content = item.template(repoRoot);
     fs.mkdirSync(path.dirname(fullPath), { recursive: true });
     fs.writeFileSync(fullPath, content);
-    results.push({ file: item.file, status: "created", fixes: item.checks });
+    results.push({ file: item.file, status: 'created', fixes: item.checks });
     written++;
   }
 
@@ -336,7 +336,7 @@ function handleApplyFixes(args) {
     previousScore: report.scores.overallScore,
     newScore: newReport.scores.overallScore,
     scoreDelta: Math.round(scoreDelta * 100) / 100,
-    message: `Created ${written} file(s), skipped ${skipped}. Score ${report.scores.overallScore} → ${newReport.scores.overallScore} (${scoreDelta >= 0 ? "+" : ""}${scoreDelta.toFixed(2)} pts). Edit the templates and re-run score_repo to see the full impact.`,
+    message: `Created ${written} file(s), skipped ${skipped}. Score ${report.scores.overallScore} → ${newReport.scores.overallScore} (${scoreDelta >= 0 ? '+' : ''}${scoreDelta.toFixed(2)} pts). Edit the templates and re-run score_repo to see the full impact.`,
   };
 }
 
@@ -344,11 +344,11 @@ function handleApplyFixes(args) {
 
 function callTool(name, args) {
   switch (name) {
-    case "score_repo":
+    case 'score_repo':
       return handleScoreRepo(args);
-    case "get_fix_plan":
+    case 'get_fix_plan':
       return handleGetFixPlan(args);
-    case "apply_fixes":
+    case 'apply_fixes':
       return handleApplyFixes(args);
     default:
       throw new McpError(ErrorCode.InvalidParams, `Unknown tool: ${name}`);
@@ -360,17 +360,17 @@ function callTool(name, args) {
 function serverVersion() {
   try {
     const pkg = JSON.parse(
-      fs.readFileSync(path.join(__dirname, "../../package.json"), "utf8"),
+      fs.readFileSync(path.join(__dirname, '../../package.json'), 'utf8'),
     );
-    return pkg.version || "0.0.0";
+    return pkg.version || '0.0.0';
   } catch {
-    return "0.0.0";
+    return '0.0.0';
   }
 }
 
 async function startMcpServer() {
   const server = new Server(
-    { name: "fundscore", version: serverVersion() },
+    { name: 'fundscore', version: serverVersion() },
     { capabilities: { tools: {} } },
   );
 
@@ -386,11 +386,11 @@ async function startMcpServer() {
     try {
       const out = await callTool(toolName, req.params.arguments);
       return {
-        content: [{ type: "text", text: JSON.stringify(out, null, 2) }],
+        content: [{ type: 'text', text: JSON.stringify(out, null, 2) }],
       };
     } catch (e) {
       return {
-        content: [{ type: "text", text: `Error: ${e.message}` }],
+        content: [{ type: 'text', text: `Error: ${e.message}` }],
         isError: true,
       };
     }

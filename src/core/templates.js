@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Template scaffolding for --fix mode.
@@ -6,14 +6,14 @@
  * Templates use the repo name (inferred from directory) as a placeholder.
  */
 
-const path = require("path");
+const path = require('path');
 
 function repoName(repoRoot) {
   return path.basename(path.resolve(repoRoot));
 }
 
 const TEMPLATES = {
-  "FUNDING.md": (repoRoot) => {
+  'FUNDING.md': (repoRoot) => {
     const name = repoName(repoRoot);
     return `# ${name} — Funding
 
@@ -42,7 +42,7 @@ const TEMPLATES = {
 `;
   },
 
-  "ROADMAP.md": (repoRoot) => {
+  'ROADMAP.md': (repoRoot) => {
     const name = repoName(repoRoot);
     return `# ${name} — Roadmap
 
@@ -66,7 +66,7 @@ const TEMPLATES = {
 `;
   },
 
-  "RISKS.md": (repoRoot) => {
+  'RISKS.md': (repoRoot) => {
     const name = repoName(repoRoot);
     return `# ${name} — Risks & Mitigations
 
@@ -90,7 +90,7 @@ const TEMPLATES = {
 `;
   },
 
-  "SECURITY.md": (repoRoot) => {
+  'SECURITY.md': (repoRoot) => {
     const name = repoName(repoRoot);
     return `# Security Policy — ${name}
 
@@ -109,7 +109,7 @@ const TEMPLATES = {
 `;
   },
 
-  "CONTRIBUTING.md": (repoRoot) => {
+  'CONTRIBUTING.md': (repoRoot) => {
     const name = repoName(repoRoot);
     return `# Contributing to ${name}
 
@@ -134,7 +134,7 @@ const TEMPLATES = {
 `;
   },
 
-  "CHANGELOG.md": () => {
+  'CHANGELOG.md': () => {
     return `# Changelog
 
 All notable changes to this project will be documented in this file.
@@ -152,13 +152,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 - 
 
-## [0.1.0] - ${new Date().toISOString().split("T")[0]}
+## [0.1.0] - ${new Date().toISOString().split('T')[0]}
 ### Added
 - Initial release
 `;
   },
 
-  "COMPARABLES.md": (repoRoot) => {
+  'COMPARABLES.md': (repoRoot) => {
     const name = repoName(repoRoot);
     return `# ${name} — Market & Comparables
 
@@ -183,12 +183,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
  * Map check IDs to the template files that would fix them.
  */
 const CHECK_TO_TEMPLATE = {
-  "funding-or-roadmap": ["FUNDING.md", "ROADMAP.md"],
-  "risks-honest": ["RISKS.md"],
-  security: ["SECURITY.md"],
-  contributing: ["CONTRIBUTING.md"],
-  changelog: ["CHANGELOG.md"],
-  "market-comps": ["COMPARABLES.md"],
+  'funding-or-roadmap': ['FUNDING.md', 'ROADMAP.md'],
+  'risks-honest': ['RISKS.md'],
+  security: ['SECURITY.md'],
+  contributing: ['CONTRIBUTING.md'],
+  changelog: ['CHANGELOG.md'],
+  'market-comps': ['COMPARABLES.md'],
 };
 
 /**

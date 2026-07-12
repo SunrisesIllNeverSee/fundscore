@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Investor Lens Report — round-specific gap analysis.
@@ -15,138 +15,138 @@
  */
 
 const ROUND_CHECKLISTS = {
-  "pre-seed": {
-    label: "Pre-Seed",
-    checkSize: "$250k - $500k",
+  'pre-seed': {
+    label: 'Pre-Seed',
+    checkSize: '$250k - $500k',
     description:
-      "Investors want to see a clear problem, a team that can build, and early signals of life.",
+      'Investors want to see a clear problem, a team that can build, and early signals of life.',
     required: [
-      "readme-exists",
-      "readme-oneliner",
-      "contact-team",
-      "audience-customer",
+      'readme-exists',
+      'readme-oneliner',
+      'contact-team',
+      'audience-customer',
     ],
     expected: [
-      "readme-demo",
-      "deployed-url",
-      "license",
-      "tests-or-ci",
-      "git-activity",
+      'readme-demo',
+      'deployed-url',
+      'license',
+      'tests-or-ci',
+      'git-activity',
     ],
-    bonus: ["funding-or-roadmap", "monetization-clarity", "market-evidence"],
+    bonus: ['funding-or-roadmap', 'monetization-clarity', 'market-evidence'],
   },
   seed: {
-    label: "Seed",
-    checkSize: "$1M - $3M",
+    label: 'Seed',
+    checkSize: '$1M - $3M',
     description:
       "Investors want evidence the product works, the market is real, and there's a path to revenue.",
     required: [
-      "readme-exists",
-      "readme-oneliner",
-      "audience-customer",
-      "funding-or-roadmap",
-      "market-evidence",
+      'readme-exists',
+      'readme-oneliner',
+      'audience-customer',
+      'funding-or-roadmap',
+      'market-evidence',
     ],
     expected: [
-      "deployed-url",
-      "readme-demo",
-      "license",
-      "tests-or-ci",
-      "git-activity",
-      "monetization-clarity",
-      "traction-evidence",
+      'deployed-url',
+      'readme-demo',
+      'license',
+      'tests-or-ci',
+      'git-activity',
+      'monetization-clarity',
+      'traction-evidence',
     ],
     bonus: [
-      "risks-honest",
-      "security",
-      "contributing",
-      "architecture",
-      "recession-resilience",
-      "pricing-power",
+      'risks-honest',
+      'security',
+      'contributing',
+      'architecture',
+      'recession-resilience',
+      'pricing-power',
     ],
   },
-  "series-a": {
-    label: "Series A",
-    checkSize: "$5M - $15M",
+  'series-a': {
+    label: 'Series A',
+    checkSize: '$5M - $15M',
     description:
-      "Investors want real traction, governance, scale evidence, and a defensible moat.",
+      'Investors want real traction, governance, scale evidence, and a defensible moat.',
     required: [
-      "readme-exists",
-      "readme-oneliner",
-      "audience-customer",
-      "funding-or-roadmap",
-      "market-evidence",
-      "monetization-clarity",
-      "traction-evidence",
-      "deployed-url",
+      'readme-exists',
+      'readme-oneliner',
+      'audience-customer',
+      'funding-or-roadmap',
+      'market-evidence',
+      'monetization-clarity',
+      'traction-evidence',
+      'deployed-url',
     ],
     expected: [
-      "license",
-      "tests-or-ci",
-      "git-activity",
-      "contributor-count",
-      "security",
-      "architecture",
-      "changelog",
-      "contributing",
-      "risks-honest",
-      "recession-resilience",
-      "pricing-power",
-      "tech-enabled-margins",
+      'license',
+      'tests-or-ci',
+      'git-activity',
+      'contributor-count',
+      'security',
+      'architecture',
+      'changelog',
+      'contributing',
+      'risks-honest',
+      'recession-resilience',
+      'pricing-power',
+      'tech-enabled-margins',
     ],
-    bonus: ["contingency-depth", "readme-cta", "readme-demo"],
+    bonus: ['contingency-depth', 'readme-cta', 'readme-demo'],
   },
   grant: {
-    label: "Grant",
-    checkSize: "varies",
+    label: 'Grant',
+    checkSize: 'varies',
     description:
-      "Grantors want public benefit, open access, reproducibility, and clear impact.",
+      'Grantors want public benefit, open access, reproducibility, and clear impact.',
     required: [
-      "readme-exists",
-      "readme-oneliner",
-      "license",
-      "audience-customer",
+      'readme-exists',
+      'readme-oneliner',
+      'license',
+      'audience-customer',
     ],
     expected: [
-      "tests-or-ci",
-      "git-activity",
-      "contributing",
-      "changelog",
-      "architecture",
+      'tests-or-ci',
+      'git-activity',
+      'contributing',
+      'changelog',
+      'architecture',
     ],
     bonus: [
-      "funding-or-roadmap",
-      "market-evidence",
-      "security",
-      "deployed-url",
+      'funding-or-roadmap',
+      'market-evidence',
+      'security',
+      'deployed-url',
     ],
   },
   unknown: {
-    label: "General",
-    checkSize: "unknown",
+    label: 'General',
+    checkSize: 'unknown',
     description:
-      "No funding round inferred. Showing general investor-readiness checklist.",
+      'No funding round inferred. Showing general investor-readiness checklist.',
     required: [
-      "readme-exists",
-      "readme-oneliner",
-      "audience-customer",
-      "license",
+      'readme-exists',
+      'readme-oneliner',
+      'audience-customer',
+      'license',
     ],
     expected: [
-      "funding-or-roadmap",
-      "market-evidence",
-      "deployed-url",
-      "tests-or-ci",
-      "git-activity",
-      "contact-team",
-      "monetization-clarity",
+      'funding-or-roadmap',
+      'market-evidence',
+      'deployed-url',
+      'tests-or-ci',
+      'git-activity',
+      'contact-team',
+      'monetization-clarity',
     ],
     bonus: [
-      "risks-honest",
-      "security",
-      "contributing",
-      "architecture",
-      "traction-evidence",
+      'risks-honest',
+      'security',
+      'contributing',
+      'architecture',
+      'traction-evidence',
     ],
   },
 };
@@ -158,7 +158,7 @@ const ROUND_CHECKLISTS = {
  * @returns {object} lens report
  */
 function buildLensReport(round, checkResults) {
-  const checklist = ROUND_CHECKLISTS[round] || ROUND_CHECKLISTS["unknown"];
+  const checklist = ROUND_CHECKLISTS[round] || ROUND_CHECKLISTS['unknown'];
 
   // Build a map of check id → pass status
   const allChecks = [
@@ -207,13 +207,13 @@ function buildLensReport(round, checkResults) {
   const missing = [
     ...requiredResults
       .filter((r) => !r.pass)
-      .map((r) => ({ ...r, category: "required" })),
+      .map((r) => ({ ...r, category: 'required' })),
     ...expectedResults
       .filter((r) => !r.pass)
-      .map((r) => ({ ...r, category: "expected" })),
+      .map((r) => ({ ...r, category: 'expected' })),
     ...bonusResults
       .filter((r) => !r.pass)
-      .map((r) => ({ ...r, category: "bonus" })),
+      .map((r) => ({ ...r, category: 'bonus' })),
   ];
 
   return {

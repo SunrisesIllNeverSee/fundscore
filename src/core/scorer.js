@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
-const fs = require("fs");
-const path = require("path");
-const { readFile, findFile, listFiles, loadOverrides } = require("./loader");
-const { inferLens } = require("./lens");
-const { runRubric } = require("./rubric");
-const { computeBusiness } = require("./business");
-const { computeQuality } = require("./quality");
-const { buildLensReport } = require("./lens-report");
+const fs = require('fs');
+const path = require('path');
+const { readFile, findFile, listFiles, loadOverrides } = require('./loader');
+const { inferLens } = require('./lens');
+const { runRubric } = require('./rubric');
+const { computeBusiness } = require('./business');
+const { computeQuality } = require('./quality');
+const { buildLensReport } = require('./lens-report');
 
 /**
  * Default scoring weights (0-100 scale).
@@ -57,10 +57,10 @@ function score(repoRoot) {
 
   // Lens inference
   const textBlobs = [
-    readFile(resolved, "README.md"),
-    readFile(resolved, "FUNDING.md"),
-    readFile(resolved, "ROADMAP.md"),
-    readFile(resolved, ".fundscore.yml"),
+    readFile(resolved, 'README.md'),
+    readFile(resolved, 'FUNDING.md'),
+    readFile(resolved, 'ROADMAP.md'),
+    readFile(resolved, '.fundscore.yml'),
   ];
   const lens = inferLens(textBlobs, overrides);
 
@@ -113,10 +113,10 @@ function score(repoRoot) {
 
   const status =
     overallScore >= thresholds.warn
-      ? "pass"
+      ? 'pass'
       : overallScore >= thresholds.fail
-        ? "warn"
-        : "fail";
+        ? 'warn'
+        : 'fail';
 
   // Investor lens report (round-specific gap analysis)
   const lensReport = buildLensReport(lens.round, {

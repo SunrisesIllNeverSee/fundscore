@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Heuristic quality scoring — no external LLM calls.
@@ -111,8 +111,8 @@ function scoreConsistency(combinedText) {
   const pattern = /(\d[\d,]*)\s+(users?|customers?|seats?|clients?)/gi;
   let m;
   while ((m = pattern.exec(combinedText)) !== null) {
-    const unit = m[2].toLowerCase().replace(/s$/, "");
-    const val = parseInt(m[1].replace(/,/g, ""), 10);
+    const unit = m[2].toLowerCase().replace(/s$/, '');
+    const val = parseInt(m[1].replace(/,/g, ''), 10);
     if (!unitMatches[unit]) unitMatches[unit] = [];
     unitMatches[unit].push(val);
   }
@@ -134,32 +134,32 @@ function scoreConsistency(combinedText) {
  * @returns {{ qualityScore: number, dimensions: object }}
  */
 function computeQuality(ctx) {
-  const readme = ctx.readFile("README.md") || "";
-  const funding = ctx.readFile("FUNDING.md") || "";
-  const roadmap = ctx.readFile("ROADMAP.md") || "";
-  const combined = [readme, funding, roadmap].join("\n");
+  const readme = ctx.readFile('README.md') || '';
+  const funding = ctx.readFile('FUNDING.md') || '';
+  const roadmap = ctx.readFile('ROADMAP.md') || '';
+  const combined = [readme, funding, roadmap].join('\n');
 
   const dimensions = {
     readability: {
       score: scoreReadability(readme),
       weight: 3,
-      label: "Readability (README)",
+      label: 'Readability (README)',
     },
     specificity: {
       score: scoreSpecificity(combined),
       weight: 3,
-      label: "Specificity (concrete numbers/metrics)",
+      label: 'Specificity (concrete numbers/metrics)',
     },
     structure: {
       score: scoreStructure(readme),
       weight: 2,
-      label: "Document structure (headings/lists)",
+      label: 'Document structure (headings/lists)',
     },
-    length: { score: scoreLength(readme), weight: 1, label: "README length" },
+    length: { score: scoreLength(readme), weight: 1, label: 'README length' },
     consistency: {
       score: scoreConsistency(combined),
       weight: 1,
-      label: "Internal consistency",
+      label: 'Internal consistency',
     },
   };
 

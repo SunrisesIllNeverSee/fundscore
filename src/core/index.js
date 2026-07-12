@@ -1,5 +1,5 @@
-"use strict";
+'use strict';
 
-const { score } = require("./scorer");
+const { score } = require('./scorer');
 
 module.exports = { score };

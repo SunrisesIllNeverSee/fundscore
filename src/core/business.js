@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * Business viability — investor signal communication checks.
@@ -13,13 +13,13 @@
 
 const BUSINESS_CHECKS = [
   {
-    id: "monetization-clarity",
-    label: "How the business makes money is clearly stated",
+    id: 'monetization-clarity',
+    label: 'How the business makes money is clearly stated',
     weight: 8,
     required: false,
     check(ctx) {
       const content =
-        (ctx.readFile("README.md") || "") + (ctx.readFile("FUNDING.md") || "");
+        (ctx.readFile('README.md') || '') + (ctx.readFile('FUNDING.md') || '');
       const patterns = [
         /\b(?:revenue|monetiz|pricing|subscription|freemium|saas|paying|paid|tier|plan)\b/i,
         /\$\d+.*?(?:\/mo|\/year|per month|per year|\/user|per user)/i,
@@ -30,30 +30,30 @@ const BUSINESS_CHECKS = [
       if (hits.length >= 1) {
         return {
           pass: true,
-          evidence: ["README.md"],
-          reason: "Repo mentions monetization, pricing, or revenue model.",
+          evidence: ['README.md'],
+          reason: 'Repo mentions monetization, pricing, or revenue model.',
         };
       }
       return {
         pass: false,
         evidence: [],
         reason:
-          "No mention of how the business makes money (pricing, revenue model, monetization).",
+          'No mention of how the business makes money (pricing, revenue model, monetization).',
       };
     },
   },
   {
-    id: "recession-resilience",
+    id: 'recession-resilience',
     label:
-      "Recession resilience signals (recurring revenue, moat, fixed costs)",
+      'Recession resilience signals (recurring revenue, moat, fixed costs)',
     weight: 6,
     required: false,
     check(ctx) {
       const content =
-        (ctx.readFile("README.md") || "") +
-        (ctx.readFile("FUNDING.md") || "") +
-        (ctx.readFile("RISKS.md") || "") +
-        (ctx.readFile("ROADMAP.md") || "");
+        (ctx.readFile('README.md') || '') +
+        (ctx.readFile('FUNDING.md') || '') +
+        (ctx.readFile('RISKS.md') || '') +
+        (ctx.readFile('ROADMAP.md') || '');
       const signals = [
         /\brecurring\s+(?:revenue|payment|subscription)/i,
         /\b(?:moat|defensible|defensibility|switching\s+cost|sticky|lock-?in)\b/i,
@@ -64,7 +64,7 @@ const BUSINESS_CHECKS = [
       if (hits.length >= 1) {
         return {
           pass: true,
-          evidence: ["README.md"],
+          evidence: ['README.md'],
           reason: `${hits.length} recession-resilience signal(s) found.`,
         };
       }
@@ -72,20 +72,20 @@ const BUSINESS_CHECKS = [
         pass: false,
         evidence: [],
         reason:
-          "No recession-resilience signals (recurring revenue, moat, fixed costs, diversification).",
+          'No recession-resilience signals (recurring revenue, moat, fixed costs, diversification).',
       };
     },
   },
   {
-    id: "pricing-power",
-    label: "Pricing power signals (switching costs, sticky product, CAC)",
+    id: 'pricing-power',
+    label: 'Pricing power signals (switching costs, sticky product, CAC)',
     weight: 6,
     required: false,
     check(ctx) {
       const content =
-        (ctx.readFile("README.md") || "") +
-        (ctx.readFile("FUNDING.md") || "") +
-        (ctx.readFile("ROADMAP.md") || "");
+        (ctx.readFile('README.md') || '') +
+        (ctx.readFile('FUNDING.md') || '') +
+        (ctx.readFile('ROADMAP.md') || '');
       const signals = [
         /\b(?:switching\s+cost|sticky|churn|retention|loyalty)\b/i,
         /\b(?:recurring|subscription|annual\s+contract|multi-?year)\b/i,
@@ -97,7 +97,7 @@ const BUSINESS_CHECKS = [
       if (hits.length >= 1) {
         return {
           pass: true,
-          evidence: ["README.md"],
+          evidence: ['README.md'],
           reason: `${hits.length} pricing-power signal(s) found.`,
         };
       }
@@ -105,20 +105,20 @@ const BUSINESS_CHECKS = [
         pass: false,
         evidence: [],
         reason:
-          "No pricing-power signals (switching costs, retention, CAC/LTV, upsell).",
+          'No pricing-power signals (switching costs, retention, CAC/LTV, upsell).',
       };
     },
   },
   {
-    id: "tech-enabled-margins",
-    label: "Tech-enabled margin signals (automation, API, scale)",
+    id: 'tech-enabled-margins',
+    label: 'Tech-enabled margin signals (automation, API, scale)',
     weight: 5,
     required: false,
     check(ctx) {
       const content =
-        (ctx.readFile("README.md") || "") +
-        (ctx.readFile("ROADMAP.md") || "") +
-        (ctx.readFile("FUNDING.md") || "");
+        (ctx.readFile('README.md') || '') +
+        (ctx.readFile('ROADMAP.md') || '') +
+        (ctx.readFile('FUNDING.md') || '');
       const signals = [
         /\b(?:automat|api|async|pipeline|workflow|orchestrat)/i,
         /\b(?:scale|scalable|throughput|efficiency|productivity)/i,
@@ -130,7 +130,7 @@ const BUSINESS_CHECKS = [
       if (hits.length >= 2) {
         return {
           pass: true,
-          evidence: ["README.md"],
+          evidence: ['README.md'],
           reason: `${hits.length} tech-margin signal(s) found.`,
         };
       }
@@ -138,32 +138,32 @@ const BUSINESS_CHECKS = [
         pass: false,
         evidence: [],
         reason:
-          "Insufficient tech-margin signals (need 2+: automation, API, scale, AI, self-serve).",
+          'Insufficient tech-margin signals (need 2+: automation, API, scale, AI, self-serve).',
       };
     },
   },
   {
-    id: "contingency-depth",
+    id: 'contingency-depth',
     label:
-      "Contingency / downside planning (scenario planning, risk mitigation)",
+      'Contingency / downside planning (scenario planning, risk mitigation)',
     weight: 4,
     required: false,
     check(ctx) {
-      const risks = ctx.readFile("RISKS.md") || "";
-      const roadmap = ctx.readFile("ROADMAP.md") || "";
-      const readme = ctx.readFile("README.md") || "";
+      const risks = ctx.readFile('RISKS.md') || '';
+      const roadmap = ctx.readFile('ROADMAP.md') || '';
+      const readme = ctx.readFile('README.md') || '';
       const signals = [
         /scenario|downside|worst\s+case|fallback|plan\s+b|contingenc/i,
         /mitigat|hedge|diversif|backup|failover|resilien/i,
         /if.*?(?:fail|doesn't|does\s+not|shuts?|pivot)/i,
         /runway|burn\s+rate|cash\s+flow|break-?even/i,
       ];
-      const combined = risks + "\n" + roadmap + "\n" + readme;
+      const combined = risks + '\n' + roadmap + '\n' + readme;
       const hits = signals.filter((p) => p.test(combined));
       if (hits.length >= 1) {
         return {
           pass: true,
-          evidence: ["RISKS.md"],
+          evidence: ['RISKS.md'],
           reason: `${hits.length} contingency signal(s) found.`,
         };
       }
@@ -171,20 +171,20 @@ const BUSINESS_CHECKS = [
         pass: false,
         evidence: [],
         reason:
-          "No contingency/downside planning signals (scenario, mitigation, runway, break-even).",
+          'No contingency/downside planning signals (scenario, mitigation, runway, break-even).',
       };
     },
   },
   {
-    id: "market-evidence",
-    label: "Market evidence (market size, competitors, positioning)",
+    id: 'market-evidence',
+    label: 'Market evidence (market size, competitors, positioning)',
     weight: 6,
     required: false,
     check(ctx) {
       const content =
-        (ctx.readFile("README.md") || "") +
-        (ctx.readFile("FUNDING.md") || "") +
-        (ctx.readFile("COMPARABLES.md") || "");
+        (ctx.readFile('README.md') || '') +
+        (ctx.readFile('FUNDING.md') || '') +
+        (ctx.readFile('COMPARABLES.md') || '');
       const signals = [
         /\b(?:tam|sam|som|market\s+size|total\s+addressable)\b/i,
         /\b(?:competitor|comparable|comp|alternative|incumbent)\b/i,
@@ -196,7 +196,7 @@ const BUSINESS_CHECKS = [
       if (hits.length >= 1) {
         return {
           pass: true,
-          evidence: ["README.md"],
+          evidence: ['README.md'],
           reason: `${hits.length} market-evidence signal(s) found.`,
         };
       }
@@ -204,20 +204,20 @@ const BUSINESS_CHECKS = [
         pass: false,
         evidence: [],
         reason:
-          "No market-evidence signals (TAM, competitors, positioning, growth rate).",
+          'No market-evidence signals (TAM, competitors, positioning, growth rate).',
       };
     },
   },
   {
-    id: "traction-evidence",
-    label: "Traction evidence (users, revenue, growth metrics)",
+    id: 'traction-evidence',
+    label: 'Traction evidence (users, revenue, growth metrics)',
     weight: 7,
     required: false,
     check(ctx) {
       const content =
-        (ctx.readFile("README.md") || "") +
-        (ctx.readFile("FUNDING.md") || "") +
-        (ctx.readFile("ROADMAP.md") || "");
+        (ctx.readFile('README.md') || '') +
+        (ctx.readFile('FUNDING.md') || '') +
+        (ctx.readFile('ROADMAP.md') || '');
       const signals = [
         /\b\d+\s*(?:users?|customers?|signups?|accounts?|subscribers?)\b/i,
         /\$\d+[kKmM]?\s*(?:arr|mrr|revenue|monthly|annual)/i,
@@ -230,7 +230,7 @@ const BUSINESS_CHECKS = [
       if (hits.length >= 1) {
         return {
           pass: true,
-          evidence: ["README.md"],
+          evidence: ['README.md'],
           reason: `${hits.length} traction signal(s) found.`,
         };
       }
@@ -238,7 +238,7 @@ const BUSINESS_CHECKS = [
         pass: false,
         evidence: [],
         reason:
-          "No traction signals (users, revenue, growth metrics, testimonials).",
+          'No traction signals (users, revenue, growth metrics, testimonials).',
       };
     },
   },
@@ -287,7 +287,7 @@ function computeBusiness(ctx, overrides = {}) {
       required: check.required,
       pass: result.pass,
       evidence: result.evidence || [],
-      reason: result.reason || "",
+      reason: result.reason || '',
     };
   });
 
