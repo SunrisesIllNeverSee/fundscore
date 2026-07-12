@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "start": "node bin/fundscore.js",
-    "lint": "eslint src bin tests --ext .js",
+    "lint": "eslint src bin tests",
     "test": "jest --testPathPatterns=tests/"
   },
   "keywords": [
