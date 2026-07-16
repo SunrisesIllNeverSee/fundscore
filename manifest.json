@@ -1,0 +1,44 @@
+{
+  "mcpb_version": "0.1",
+  "name": "fundscore",
+  "version": "0.2.0",
+  "description": "Lighthouse for repos — deterministic investor-readiness scoring (0-100) via MCP. 3 tools: score_repo, get_fix_plan, apply_fixes.",
+  "author": {
+    "name": "SunrisesIllNeverSee",
+    "url": "https://github.com/SunrisesIllNeverSee"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "bin/fundscore.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/bin/fundscore.js", "mcp"]
+    }
+  },
+  "tools": [
+    {
+      "name": "score_repo",
+      "description": "Score a GitHub repository for investor readiness (0-100 scale). Returns three dimension scores, round-specific gap analysis, top fixes with score deltas, and missing checks. Auto-saves a snapshot to .fundscore-history/.",
+      "title": "Score repository"
+    },
+    {
+      "name": "get_fix_plan",
+      "description": "Get a scaffold plan for missing investor-readiness docs. Returns the list of template files that would be created, which checks each fixes, and the score delta. Read-only.",
+      "title": "Get fix plan"
+    },
+    {
+      "name": "apply_fixes",
+      "description": "Create template files for missing investor-readiness docs. Generates scaffold templates (FUNDING.md, ROADMAP.md, RISKS.md, etc.). Use dryRun=true to preview without writing.",
+      "title": "Apply fixes (scaffold docs)"
+    }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "linux", "win32"],
+    "runtimes": {
+      "node": ">=18"
+    }
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/SunrisesIllNeverSee/fundscore",
+  "keywords": ["funding", "investor-readiness", "scoring", "lighthouse", "repo-health", "mcp", "model-context-protocol"]
+}

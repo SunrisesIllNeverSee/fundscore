@@ -1,0 +1,53 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/registry/main/docs/reference/server-json/generic-server-json.schema.json",
+  "name": "io.github.SunrisesIllNeverSee/fundscore",
+  "description": "Lighthouse for repos — deterministic investor-readiness scoring (0-100) via MCP. 3 tools: score_repo (score a repo), get_fix_plan (scaffold plan for missing docs), apply_fixes (create template files). All local, no auth.",
+  "version": "0.2.0",
+  "homepage": "https://github.com/SunrisesIllNeverSee/fundscore",
+  "license": "MIT",
+  "author": {
+    "name": "SunrisesIllNeverSee",
+    "url": "https://github.com/SunrisesIllNeverSee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SunrisesIllNeverSee/fundscore.git"
+  },
+  "registryType": "npm",
+  "package": {
+    "name": "fundscore",
+    "registry": "https://registry.npmjs.org"
+  },
+  "runtime": "node",
+  "transport": "stdio",
+  "tools": [
+    {
+      "name": "score_repo",
+      "description": "Score a GitHub repository for investor readiness (0-100 scale). Returns three dimension scores, round-specific gap analysis, top fixes with score deltas, and missing checks.",
+      "title": "Score repository",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "get_fix_plan",
+      "description": "Get a scaffold plan for missing investor-readiness docs. Returns the list of template files that would be created, which checks each fixes, and the score delta. Read-only.",
+      "title": "Get fix plan",
+      "annotations": {
+        "readOnlyHint": true,
+        "idempotentHint": true
+      }
+    },
+    {
+      "name": "apply_fixes",
+      "description": "Create template files for missing investor-readiness docs. Generates scaffold templates. Use dryRun=true to preview without writing.",
+      "title": "Apply fixes (scaffold docs)",
+      "annotations": {
+        "openWorldHint": true
+      }
+    }
+  ],
+  "keywords": ["funding", "investor-readiness", "scoring", "lighthouse", "repo-health", "mcp", "model-context-protocol", "ai-agent", "deterministic"],
+  "categories": ["developer-tools", "repo-health"]
+}

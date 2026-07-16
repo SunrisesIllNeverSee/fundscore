@@ -2,6 +2,7 @@
   "name": "fundscore",
   "version": "0.2.0",
   "description": "Lighthouse for repos — deterministic investor-readiness scoring (artifacts + business viability + quality), CLI + GitHub Action",
+  "mcpName": "io.github.SunrisesIllNeverSee/fundscore",
   "main": "src/core/index.js",
   "bin": {
     "fundscore": "bin/fundscore.js"
