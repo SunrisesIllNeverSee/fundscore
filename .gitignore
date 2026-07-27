@@ -7,3 +7,4 @@ fundscore-report.json
 fundscore-report.md
 *.log
 *.mcpb
+.DS_Store
