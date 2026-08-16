@@ -69,6 +69,7 @@ Plus a **Round-Specific Report**: auto-infers your funding round (pre-seed / see
 |------|-----------|---------|
 | **[fundscore](https://github.com/SunrisesIllNeverSee/fundscore)** (this repo) | The repo scorer — investor-readiness scoring for GitHub repos. CLI + MCP server. | `npx fundscore` |
 | **[sigrank-app](https://github.com/SunrisesIllNeverSee/sigrank-app)** | The leaderboard — signalaf.com. Privacy-preserving operator profiles, class tiers, board rankings. | [signalaf.com](https://signalaf.com) |
+| **[sigarena](https://github.com/SunrisesIllNeverSee/sigarena)** | The satellite — public LLM operator evals at sigeconomy.com. Read-only leaderboard, SEO/AEO surface. | [sigeconomy.com](https://sigeconomy.com) |
 | **[sigrank-mcp](https://github.com/SunrisesIllNeverSee/sigrank-mcp)** | The instrument — extracts 4 token pillars, computes the cascade, submits to the leaderboard. MCP server + TUI dashboard. | `npx sigrank` |
 | **[signaf](https://github.com/SunrisesIllNeverSee/signa)** | The coach — reads your session logs, builds a taste profile, measures ASI, coaches you on token efficiency. | `npx @burnmydays/signaf` |
 | **[sigrank-vscode](https://github.com/SunrisesIllNeverSee/sigrank-vscode)** | The IDE extension — see your cascade metrics inline in VS Code. | `code --install-extension sigrank.sigrank` |
