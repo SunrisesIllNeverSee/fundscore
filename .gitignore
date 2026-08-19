@@ -8,3 +8,10 @@ fundscore-report.md
 *.log
 *.mcpb
 .DS_Store
+# Repository Standard runtime state
+.coord/micro/state/.session-current
+.coord/micro/state/.role-*
+.coord/micro/state/ACTIVITY.log
+.coord/micro/state/snapshots/
+.coord/micro/scratchpad-archive/
+.repo/.cache/

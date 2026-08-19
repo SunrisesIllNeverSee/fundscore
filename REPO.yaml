@@ -1,0 +1,39 @@
+standard:
+  name: ello-repo-standard
+  version: "1.0.0"
+  mode: migrate
+
+repo:
+  name: fundscore
+  type: library
+  lifecycle: active
+  repo_id: fundscore
+  family: sigrank
+  purpose: fundscore — token cascade efficiency scoring MCP server.
+
+structure:
+  profile: library
+  allowed_root_dirs_extra: [bin, system-devin]
+  allowed_root_files_extra: [.fundscore.example.yml, fundscore-badge.svg, glama.json, manifest.json, server.json, STATE.yaml, BUILD_REPORT.md, FIXES.md, MCP_SERVER_DESCRIPTION.md, PLAN.md, RESEARCH.md]
+  document_roots: [docs]
+  artifact_roots: [artifacts]
+  archive_roots: [archive, docs/archive]
+
+naming:
+  forbid_version_suffixes: true
+  forbidden_suffixes: [_final, _final2, _new, _updated, _revised, _copy]
+
+knowledge:
+  okf_enabled: true
+  okf_roots: [docs, .coord]
+  okf_severity: warn
+
+coordination:
+  micro_enabled: true
+  micro_root: .coord/micro
+  macro_enabled: true
+  macro_root: .coord/macro
+
+github:
+  ruleset_profile: solo-fast
+  required_check: repo-standard
